@@ -36,7 +36,7 @@ function alertAuth() {
   var html = HtmlService.createHtmlOutput('<html><body><a href="' + authorizationUrl + '" target="_blank">認証ページを開く</a></body></html>')
     .setWidth(400)
     .setHeight(60);
-  SpreadsheetApp.getUi().SelectModal(html, 'リンクを開いて認証を行ってください');
+  SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
 }
 
 // 認証用URLのコピペできるように出力
