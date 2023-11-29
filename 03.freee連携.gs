@@ -57,8 +57,8 @@ function showCallbackUrl() {
 
   var html = HtmlService.createHtmlOutput(htmlContent)
     .setWidth(400)
-    .setHeight(150);
-  SpreadsheetApp.getUi().SelectModal(html, 'コールバックURL');
+    .setHeight(100);
+  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); // ここを変更しました
 }
 
 
