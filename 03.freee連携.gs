@@ -29,12 +29,25 @@ function alertAuth() {
   var service = getService();
   var authorizationUrl = service.getAuthorizationUrl();
 
-  var html = HtmlService.createHtmlOutput('<html><body><a href="' + authorizationUrl + '" target="_blank">認証ページを開く</a></body></html>')
+  var html = HtmlService.createHtmlOutput('<html><body>' +
+    '<a href="' + authorizationUrl + '" target="_blank" onclick="google.script.host.close();">認証ページを開く</a>' +
+    '</body></html>')
     .setWidth(400)
     .setHeight(60);
   SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
 }
 
+//　認証用のコールバック関数(アクセストークンの取得)
+// ------------------------------------------------------------
+function authCallback(request) {
+  var service = getService();
+  var isAuthorized = service.handleCallback(request);
+  if (isAuthorized) {
+    return HtmlService.createHtmlOutput('認証に成功しました。このウィンドウを閉じてください。');
+  } else {
+    return HtmlService.createHtmlOutput('認証に失敗しました。');
+  }
+}
 // 認証用コールバックURLのコピペできるように出力
 // ------------------------------------------------------------
 function showCallbackUrl() {
@@ -73,21 +86,7 @@ function getService() {
     .setPropertyStore(PropertiesService.getUserProperties());
 }
 
-//　認証用のコールバック関数(アクセストークンの取得)
-// ------------------------------------------------------------
-function authCallback(request) {
-  var service = getService();
-  var isAuthorized = service.handleCallback(request);
-  if (isAuthorized) {
-    var html = HtmlService.createHtmlOutput('<html><body>' +
-      '認証に成功しました。このタブはすぐに閉じます。<br>' +
-      '<script>setTimeout(function() { window.top.close(); }, 5000);</script>' +
-      '</body></html>');
-    return html;
-  } else {
-    return HtmlService.createHtmlOutput('認証に失敗しました。');
-  }
-}
+
 
 
 /******************************************************************
