@@ -8,25 +8,21 @@ project_key  |1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF
 
 // 各自で作成したアプリのアプリ詳細画面からClient IDとClient Secretをカスタムメニューへコピペ
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// カスタムダイアログを表示する関数
 function inputClientInfo() {
-  //　まとめて入力したいのと、placeholderを付けたい
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt('freee API設定', 'Client IDを入力してください', ui.ButtonSet.OK_CANCEL);
-
-  if (response.getSelectedButton() == ui.Button.OK) {
-    var clientId = response.getResponseText();
-    PropertiesService.getUserProperties().setProperty('freeeClientId', clientId);
-
-    response = ui.prompt('freee API設定', 'Client Secretを入力してください', ui.ButtonSet.OK_CANCEL);
-    if (response.getSelectedButton() == ui.Button.OK) {
-      var clientSecret = response.getResponseText();
-      PropertiesService.getUserProperties().setProperty('freeeClientSecret', clientSecret);
-
-      // 認証URLの取得と表示
-      alertAuth();
-    }
-  }
+  var html = HtmlService.createHtmlOutputFromFile('ClientInfoForm')
+    .setWidth(400)
+    .setHeight(200);
+  SpreadsheetApp.getUi().showModalDialog(html, 'freee API設定');
 }
+
+// プロパティにクライアント情報を保存する関数
+function saveClientInfo(clientId, clientSecret) {
+  PropertiesService.getUserProperties()
+    .setProperty('freeeClientId', clientId)
+    .setProperty('freeeClientSecret', clientSecret);
+}
+
 // inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 function alertAuth() {
@@ -39,7 +35,7 @@ function alertAuth() {
   SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
 }
 
-// 認証用URLのコピペできるように出力
+// 認証用コールバックURLのコピペできるように出力
 // ------------------------------------------------------------
 function showCallbackUrl() {
   var scriptId = ScriptApp.getScriptId();
@@ -60,8 +56,6 @@ function showCallbackUrl() {
     .setHeight(100);
   SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); // ここを変更しました
 }
-
-
 
 // freeeAPIのサービスを取得
 // ------------------------------------------------------------
