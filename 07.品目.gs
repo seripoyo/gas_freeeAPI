@@ -1,37 +1,3 @@
-
-// function test() {
-//   // Freee APIから既存の品目を取得
-//   var freeeApp = getService();
-//   var accessToken = freeeApp.getAccessToken();
-//   var companyId = getSelectedCompanyId();
-//   var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId;
-//   var headers = { "Authorization": "Bearer " + accessToken };
-//   var options = { "method": "get", "headers": headers };
-
-//   var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
-//   var itemsResponse = JSON.parse(response);
-//   var items = itemsResponse.items;
-
-//   // 既存の品目の名前とIDをマッピング
-//   var itemsMap = new Map(items.map(item => [item.name.trim(), item.id.toString()]));
-//   // スプレッドシートからL列のデータを取得
-//   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-//   var lastRowInLColumn = getLastRowInColumn("売上履歴", 12);
-//   var lColumnData = sheet.getRange(2, 12, lastRowInLColumn - 1).getValues();
-//    Logger.log(lColumnData);
-//   var itemsData = [];
-//   lColumnData.forEach(function (lValue) {
-//     var itemName = lValue[0].trim();
-//     if (itemName) {
-//       if (itemsMap.has(itemName)) {
-//         // 既存の品目IDを使用
-//         itemsData.push({ id: itemsMap.get(itemName), name: itemName });
-//       }
-//     }
-//   })
-//       Logger.log(itemsData);
-// }
-
 /******************************************************************
 summary       |3000件をMAXに税区分一覧取得&ログ出力
 requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
