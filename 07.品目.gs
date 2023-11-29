@@ -1,36 +1,3 @@
-/******************************************************************
-summary       |3000件をMAXに税区分一覧取得&ログ出力
-requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
-method        |GET
-******************************************************************/
-function logExistingItems() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
-  // var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId;
-    var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId + "&limit=3000";
-
-  var headers = { "Authorization": "Bearer " + accessToken };
-  var options = { "method": "get", "headers": headers };
-
-  try {
-    var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
-    var itemsResponse = JSON.parse(response);
-    var items = itemsResponse.items;
-
-    // 各品目の名前とIDをログに出力
-    if (items && items.length > 0) {
-      items.forEach(function(item) {
-        Logger.log("Item Name: " + item.name + ", ID: " + item.id);
-      });
-    } else {
-      Logger.log("No existing items found.");
-    }
-  } catch (e) {
-    Logger.log("Failed to fetch existing items: " + e.message);
-  }
-      Logger.log(requestUrl);
-}
 
 /******************************************************************
 内容：税区分一覧取得→既存を保存→新規を登録

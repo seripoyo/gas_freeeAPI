@@ -1,11 +1,3 @@
-// function get() {
-//   // getSelectedCompanyId関数を呼び出して事業所IDを取得
-//   var selectedCompanyId = getSelectedCompanyId();
-
-//   var freeeApp = getService();
-//   var accessToken = freeeApp.getAccessToken();
-//   Logger.log(accessToken);
-// }
 
 function managePartners() {
   var freeeApp = getService();
