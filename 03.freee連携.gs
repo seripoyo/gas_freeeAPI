@@ -79,20 +79,24 @@ function authCallback(request) {
   var service = getService();
   var isAuthorized = service.handleCallback(request);
   if (isAuthorized) {
-    return HtmlService.createHtmlOutput('認証に成功しました。タブを閉じてください。');
-    //　これ自動で閉じるようにならんかな
+    var html = HtmlService.createHtmlOutput('<html><body>' +
+      '認証に成功しました。このタブはすぐに閉じます。<br>' +
+      '<script>setTimeout(function() { window.top.close(); }, 5000);</script>' +
+      '</body></html>');
+    return html;
   } else {
     return HtmlService.createHtmlOutput('認証に失敗しました。');
   }
 }
+
 
 /******************************************************************
 function name |clearService
 summary       |認証解除
 ******************************************************************/
 function clearService() {
-  OAuth2.createService( "freee" )
-      .setPropertyStore( PropertiesService.getUserProperties() )
-      .reset();
-  
+  OAuth2.createService("freee")
+    .setPropertyStore(PropertiesService.getUserProperties())
+    .reset();
+
 }
