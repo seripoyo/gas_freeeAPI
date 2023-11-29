@@ -27,7 +27,7 @@ function inputClientInfo() {
     }
   }
 }
-// inputClientInfo()実行後に認証URL（認証のエンドポイント）をポップアップ表示
+// inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 function alertAuth() {
   var service = getService();
@@ -39,7 +39,7 @@ function alertAuth() {
   SpreadsheetApp.getUi().SelectModal(html, 'リンクを開いて認証を行ってください');
 }
 
-// 認証用URLのコピー用ポップアップ
+// 認証用URLのコピペできるように出力
 // ------------------------------------------------------------
 function showCallbackUrl() {
   var scriptId = ScriptApp.getScriptId();
