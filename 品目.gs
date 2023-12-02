@@ -37,7 +37,7 @@ function get_Items_Register() {
     if (itemName && !itemsMap.has(itemName)) {
       // 新しい品目を登録
       try {
-        var newItemId = register_NewItem(companyId, itemName, accessToken);
+        var newItemId = register_Save_New_Item(companyId, itemName, accessToken);
         newlyRegisteredItems.push({ id: newItemId, name: itemName });
         Logger.log("新しい品目を登録しました: " + itemName);
       } catch (e) {
@@ -46,55 +46,47 @@ function get_Items_Register() {
     }
   });
 /******************************************************************
-関数：register_NewItem
+関数：register_Save_New_Item
 概要：品目の新規登録
 ******************************************************************/
-function register_NewItem(companyId, itemName, accessToken) {
+function register_Save_New_Item(companyId, itemName, accessToken) {
   var requestUrl = "https://api.freee.co.jp/api/1/items";
-  var requestBody = {
-    "company_id": companyId,
-    "name": itemName
-  };
+  var headers = { "Authorization": "Bearer " + accessToken };
+  var options;
 
-  var options = {
+  // 新しい品目を登録
+  var requestBody = { "company_id": companyId, "name": itemName };
+  options = {
     "method": "post",
-    "headers": { "Authorization": "Bearer " + accessToken },
+    "headers": headers,
     "contentType": "application/json",
     "payload": JSON.stringify(requestBody),
-    "muteHttpExceptions": true // HTTP例外をミュートに設定
+    "muteHttpExceptions": true
   };
 
   var response = UrlFetchApp.fetch(requestUrl, options);
   var responseCode = response.getResponseCode();
-  var responseContent = JSON.parse(response.getContentText());
 
   if (responseCode >= 200 && responseCode < 300) {
-    // 正常に登録された場合
-    var newItem = responseContent.item;
-    return newItem.id.toString(); // 新しく登録された品目のIDを返す
+    // 品目登録に成功した場合、更新された品目一覧を取得
+    options = { "method": "get", "headers": headers };
+    response = UrlFetchApp.fetch(requestUrl + "?company_id=" + companyId, options).getContentText();
+    var updatedItems = JSON.parse(response).items;
+
+    // 品目データを保存
+    var itemsData = updatedItems.map(function(item) {
+      return { account_item_id: item.id.toString(), name: item.name };
+    });
+
+    var userProperties = PropertiesService.getUserProperties();
+    userProperties.setProperty("itemsData", JSON.stringify(itemsData));
+    Logger.log("新しい品目を含む保存された品目データ: " + JSON.stringify(itemsData));
   } else {
-    // エラーが発生した場合、詳細をログに出力
+    // 品目登録に失敗した場合
     Logger.log("品目登録エラー: " + response.getContentText());
     throw new Error("品目の登録に失敗しました: " + itemName);
   }
 }
-  // 更新された品目一覧を取得
-  response = UrlFetchApp.fetch(requestUrl, options).getContentText();
-  var updatedItems = JSON.parse(response).items;
-  saveItemsData(updatedItems);
-
-  // 新しく登録された品目のリストをログに出力
-  if (newlyRegisteredItems.length > 0) {
-    Logger.log("新しく登録された品目: " + JSON.stringify(newlyRegisteredItems));
-  } else {
-    Logger.log("新しい品目は登録されませんでした。");
-  }
-}
-// 品目のデータを保存する関数
-function saveItemsData(items) {
-  var itemsData = items.map(function(item) {
-    return { id: item.id.toString(), name: item.name };
-  });
 
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("itemsData", JSON.stringify(itemsData));
