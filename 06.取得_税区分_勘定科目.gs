@@ -17,7 +17,7 @@ function getAndSaveMatchingTaxes() {
   var taxes = taxesResponse.taxes;
 
   // 税区分一覧のID（整数に変換）と名前を配列に格納
-  var taxesData = taxes.map(function(tax) {
+  var taxesData = taxes.map(function (tax) {
     return { id: parseInt(tax.code, 10), name_ja: tax.name_ja };
   });
 
@@ -30,15 +30,37 @@ function getAndSaveMatchingTaxes() {
   // 合致する税区分を検索し、保存する配列
   var matchingTaxes = [];
 
-  gColumnData.forEach(function(gValue) {
+  gColumnData.forEach(function (gValue) {
     var matchingTax = taxesData.find(tax => tax.name_ja === gValue[0]);
     if (matchingTax) {
       matchingTaxes.push(matchingTax);
     }
   });
-
- saveMatchingTaxesData(matchingTaxes);
+  Logger.log(matchingTaxes);
+  saveMatchingTaxesData(matchingTaxes);
 }
+
+
+function getAndSaveMatchingTaxes() {
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = 2146764;
+  var requestUrl = "https://api.freee.co.jp/api/1/taxes/companies/" + companyId;
+  var headers = { "Authorization": "Bearer " + accessToken };
+  var options = { "method": "get", "headers": headers };
+
+  var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
+  var taxesResponse = JSON.parse(response);
+  var taxes = taxesResponse.taxes;
+
+  // 税区分一覧のID（整数に変換）と名前を配列に格納
+  var taxesData = taxes.map(function (tax) {
+    return { id: parseInt(tax.code, 10), name_ja: tax.name_ja };
+  });
+
+  Logger.log(taxesData);
+}
+
 
 /******************************************************************
 function name |getAccountItems
@@ -51,7 +73,7 @@ function getAndSaveMatchingAccountItems() {
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/account_items?company_id=" + companyId;
-  var headers = { "Authorization" : "Bearer " + accessToken };
+  var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
 
   var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
@@ -66,7 +88,7 @@ function getAndSaveMatchingAccountItems() {
   // 合致する勘定科目のnameとidを保存する配列
   var matchingAccountItems = [];
 
-  fColumnData.forEach(function(fValue) {
+  fColumnData.forEach(function (fValue) {
     var matchingAccountItem = accountItems.find(accountItem => accountItem.name === fValue[0]);
     if (matchingAccountItem) {
       matchingAccountItems.push({
