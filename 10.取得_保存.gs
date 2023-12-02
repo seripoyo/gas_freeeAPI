@@ -1,14 +1,19 @@
+/******************************************************************
+ * 各関数の共通変数
+******************************************************************/
+
+var freeeApp = getService();
+var accessToken = freeeApp.getAccessToken();
+var companyId = getSelectedCompanyId();
+
 
 /******************************************************************
-function name |getWalletables
+function name |get_Walletables
 summary       |口座一覧取得
 requestUrl    |https://api.freee.co.jp/api/1/walletables?company_id={companyId}&with_balance=true
 method        |GET
 ******************************************************************/
-function getWalletables() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
+function get_Walletables() {
   var requestUrl = "https://api.freee.co.jp/api/1/walletables?company_id=" + companyId + "&with_balance=true";
   var headers = { "Authorization": "Bearer " + accessToken };
 
@@ -39,9 +44,9 @@ function getWalletables() {
 }
 
 /******************************************************************
-処理：getWalletablesで保存した関数の取得
+処理：get_Walletablesで保存した関数の取得
 ******************************************************************/
-function getSavedWalletablesData() {
+function Saved_Walletables() {
   var userProperties = PropertiesService.getUserProperties();
   var walletablesDataString = userProperties.getProperty("walletablesData");
   
@@ -74,9 +79,7 @@ requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
 method        |GET
 ******************************************************************/
 function getAndSaveMatchingTaxes() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
+
   var requestUrl = "https://api.freee.co.jp/api/1/taxes/companies/" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -85,50 +88,21 @@ function getAndSaveMatchingTaxes() {
   var taxesResponse = JSON.parse(response);
   var taxes = taxesResponse.taxes;
 
-  // 税区分一覧のID（整数に変換）と名前を配列に格納
-  var taxesData = taxes.map(function (tax) {
-    return { id: parseInt(tax.code, 10), name_ja: tax.name_ja };
+  // 税区分一覧のIDを整数に変換して配列に格納
+  var taxesData = taxes.map(function(tax) {
+    return {
+      id: parseInt(tax.code, 10).toString(), // IDを整数に変換して文字列化
+      name_ja: tax.name_ja
+    };
   });
 
   Logger.log(taxesData);
-  // スプレッドシートのG列のデータを取得
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-  var lastRowInGColumn = getLastRowInColumn("売上履歴", 7);
-  var gColumnData = sheet.getRange(2, 7, lastRowInGColumn).getValues();
-  Logger.log(gColumnData);
-  // 合致する税区分を検索し、保存する配列
-  var matchingTaxes = [];
 
-  gColumnData.forEach(function (gValue) {
-    var matchingTax = taxesData.find(tax => tax.name_ja === gValue[0]);
-    if (matchingTax) {
-      matchingTaxes.push(matchingTax);
-    }
-  });
-  Logger.log(matchingTaxes);
-  saveMatchingTaxesData(matchingTaxes);
+  // 税区分データをユーザープロパティに保存
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("taxesData", JSON.stringify(taxesData));
 }
 
-
-function getAndSaveMatchingTaxes() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = 2146764;
-  var requestUrl = "https://api.freee.co.jp/api/1/taxes/companies/" + companyId;
-  var headers = { "Authorization": "Bearer " + accessToken };
-  var options = { "method": "get", "headers": headers };
-
-  var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
-  var taxesResponse = JSON.parse(response);
-  var taxes = taxesResponse.taxes;
-
-  // 税区分一覧のID（整数に変換）と名前を配列に格納
-  var taxesData = taxes.map(function (tax) {
-    return { id: parseInt(tax.code, 10), name_ja: tax.name_ja };
-  });
-
-  Logger.log(taxesData);
-}
 
 /******************************************************************
 function name |getAccountItems
@@ -137,9 +111,7 @@ requestUrl    |https://api.freee.co.jp/api/1/account_items?company_id={companyId
 method        |GET
 ******************************************************************/
 function getAndSaveMatchingAccountItems() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
+
   var requestUrl = "https://api.freee.co.jp/api/1/account_items?company_id=" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -172,4 +144,97 @@ function getAndSaveMatchingAccountItems() {
 
   // 確認のためにログに出力
   Logger.log("保存した勘定科目: " + JSON.stringify(matchingAccountItems));
+}
+
+/******************************************************************
+function name |getPartners
+summary       |取引先一覧取得
+requestUrl   |https://api.freee.co.jp/api/1/partners?company_id={companyId}
+method        |GET
+******************************************************************/
+function getPartners() {
+
+  var requestUrl = "https://api.freee.co.jp/api/1/partners?company_id=" + companyId;
+  var headers = { "Authorization": "Bearer " + accessToken };
+  var options = { "method": "get", "headers": headers };
+
+  var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
+  var partnersResponse = JSON.parse(response);
+  var partners = partnersResponse.partners;
+
+  // 配列を作成し、要素を格納（IDを整数に変換）
+  var partnersData = partners.map(function(partner) {
+    return { 
+      id: parseInt(partner.id, 10).toString(), // IDを整数に変換して文字列化
+      name: partner.name 
+    };
+  });
+
+  // 取引先データをユーザープロパティに保存
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("partnersData", JSON.stringify(partnersData));
+}
+
+
+/******************************************************************
+ * 取引先データの呼び出し関数 
+ ******************************************************************/
+
+function getSavedPartnersData() {
+  var userProperties = PropertiesService.getUserProperties();
+  var partnersDataString = userProperties.getProperty("partnersData");
+
+  if (partnersDataString) {
+    var partnersData = JSON.parse(partnersDataString);
+    Logger.log(partnersData);
+    return partnersData;
+  } else {
+    Logger.log("No partners data found.");
+    return []; // データがない場合は空の配列を返す
+  }
+}
+
+
+/******************************************************************
+function name |getItems
+summary       |品目一覧取得
+requestUrl    |https://api.freee.co.jp/api/1/items?company_id={companyId}
+method        |GET
+******************************************************************/
+function getItems() {
+
+  var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId + "&limit=3000";
+  var headers = { "Authorization": "Bearer " + accessToken };
+  var options = { "method": "get", "headers": headers };
+
+  var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
+  var itemsResponse = JSON.parse(response);
+  var items = itemsResponse.items;
+
+  // 配列を作成し、要素を格納（IDを整数に変換）
+  var itemsData = items.map(function(item) {
+    return {
+      id: parseInt(item.id, 10).toString(), // IDを整数に変換して文字列化
+      name: item.name
+    };
+  });
+
+  // 品目データをユーザープロパティに保存
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("itemsData", JSON.stringify(itemsData));
+}
+
+
+function getSavedItemsData() {
+  var userProperties = PropertiesService.getUserProperties();
+  var itemsDataString = userProperties.getProperty("itemsData");
+
+  if (itemsDataString) {
+    var itemsData = JSON.parse(itemsDataString);
+    Logger.log(itemsData);
+    return itemsData;
+  } else {
+    Logger.log("No items data found.");
+    return []; // データがない場合は空の配列を返す
+  }
 }
