@@ -1,9 +1,14 @@
+/******************************************************************
+function name |manage_Partners
+summary       |取引先一覧取得&登録→再度一覧取得→データを保存
+******************************************************************/
+
 function manage_Partners() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/partners?company_id=" + companyId + "&limit=3000";
-  var headers = { "Authorization" : "Bearer " + accessToken };
+  var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
 
   // 既存の取引先を取得
@@ -22,7 +27,6 @@ function manage_Partners() {
   var salesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
   var salesData = salesSheet.getDataRange().getValues();
   var partnersMap = new Map(existingPartners.map(p => [p.name, p.id]));
-  var newPartnersRegistered = false;
 
   var newPartners = [];
 
@@ -55,14 +59,13 @@ function manage_Partners() {
   try {
     response = UrlFetchApp.fetch(requestUrl, options).getContentText();
     var updatedPartners = JSON.parse(response).partners;
+    savePartnersData(updatedPartners);
     Logger.log("更新された取引先一覧を取得しました。");
   } catch (e) {
     Logger.log("更新された取引先一覧の取得に失敗しました: " + e.message);
   }
-
-  // 取得した一覧を savePartnersData に渡す
-  savePartnersData(updatedPartners);
 }
+
 
 
 // 新しい取引先を登録する関数
@@ -80,7 +83,7 @@ function createNewPartner(companyId, partnerName, accessToken) {
 
   var options = {
     "method": "post",
-    "headers": { "Authorization" : "Bearer " + accessToken },
+    "headers": { "Authorization": "Bearer " + accessToken },
     "contentType": "application/json",
     "payload": JSON.stringify(requestBody)
   };
@@ -99,20 +102,40 @@ function logNewPartners(registeredPartners) {
 
 function savePartnersData(partners) {
   // 取引先のIDと名前をログに出力
-  partners.forEach(partner => {
-    Logger.log("取引先: " + partner.name + " (ID: " + partner.id + ")");
+  // partners.forEach(partner => {
+  //   Logger.log("取引先: " + partner.name + " (ID: " + partner.id + ")");
+  // });
+
+  // 配列を作成し、要素を格納（IDを整数に変換）
+  var partnersData = partners.map(function (partner) {
+    return {
+      id: parseInt(partner.id, 10), // IDを整数に変換
+      name: partner.name
+    };
   });
 
-  // Google スプレッドシートに保存
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName("取引先一覧") || spreadsheet.insertSheet("取引先一覧");
-  sheet.clear(); // 既存のデータをクリア
-
-  // ヘッダー行を追加
-  sheet.appendRow(["ID", "取引先名"]);
-
-  // 各取引先データを行として追加
-  partners.forEach(partner => {
-    sheet.appendRow([partner.id, partner.name]);
-  });
+  // 取引先データをユーザープロパティに保存
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("partnersData", JSON.stringify(partnersData));
+  Logger.log("保存した取引先一覧: " + JSON.stringify(partnersData));
 }
+
+/******************************************************************
+ * 取引先データの呼び出し関数 
+ ******************************************************************/
+
+function saved_PartnersData() {
+  var userProperties = PropertiesService.getUserProperties();
+  var partnersDataString = userProperties.getProperty("partnersData");
+
+  if (partnersDataString) {
+    var partnersData = JSON.parse(partnersDataString);
+    Logger.log("取得した取引先データ: ");
+    Logger.log(partnersData);
+    return partnersData;
+  } else {
+    Logger.log("保存された取引先データはありません。");
+    return []; // データがない場合は空の配列を返す
+  }
+}
+
