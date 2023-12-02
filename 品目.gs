@@ -4,8 +4,9 @@ summary       |品目一覧取得&登録→再度一覧取得→データを保�
 ******************************************************************/
 // 既存の品目の一覧を取得し、必要に応じて新しい品目を登録
 function get_Items_Register() {
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
-  var accessToken = getService().getAccessToken();
   var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId + "&limit=3000";
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
