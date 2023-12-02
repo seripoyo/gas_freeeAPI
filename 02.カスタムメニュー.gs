@@ -62,11 +62,12 @@ function openFolder() {
   }
 }
 
+// 全ての情報を取得
+// ------------------------------------------------------------------------------------------
 function getAll(){
-  getPartners();
-  getWalletables();
-  getAccountItems();
-  getItems();
-  getSections();
-  getTags();
+  get_Walletables(); //口座
+  get_Taxes(); //税区分
+  get_AccountItems();//勘定科目
+  get_Partners();//取引先
+  get_Items();//品目
 }
