@@ -111,7 +111,7 @@ function onCompanySelected() {
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
   get_Partners();//取引先
-  get_Items();//品目
+  get_Items_Register();//品目
 }
 /******************************************************************
 function name |inputClientInfo
