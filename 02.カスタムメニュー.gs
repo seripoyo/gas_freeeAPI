@@ -3,9 +3,9 @@
 
 // スプシ起動時に実行
 function onOpen() {
-  updateMenu();
+  menu();
 }
-function updateMenu() {
+function menu() {
   var ui = SpreadsheetApp.getUi();
 
   // GAS操作メニューを作成
@@ -15,12 +15,12 @@ function updateMenu() {
   if (folderUrl) {
     gasMenu.addItem('Googleドライブでフォルダを開く', 'openFolder');
   }
-  gasMenu.addItem('売上履歴をインポートする', 'copyDataFromMultipleSheets');
-  gasMenu.addItem('売上履歴シートをリセットする', 'confirmAndResetSalesHistorySheet');
+  gasMenu.addItem('売上履歴をインポートする', 'copyDataFromMultipleSheets'); //請求書出力gs
+  gasMenu.addItem('売上履歴シートをリセットする', 'reset_Sheet');
   gasMenu.addToUi();
 
   // freee連携のヒントメニューを作成
-  var freeeMenu = ui.createMenu('freee連携のヒント');
+  var freeeMenu = ui.createMenu('freee連携機能');
   freeeMenu.addItem('①freeeと連携', 'alertAuth');
   freeeMenu.addItem('②事業所を選択', 'GetMyCompaniesID');
   freeeMenu.addItem('コールバックURLはこちら', 'showCallbackUrl');
@@ -30,29 +30,15 @@ function updateMenu() {
 
   freeeMenu.addToUi();
 }
-// 売上履歴シートの項目以外を削除
-// ------------------------------------------------------------------------------------------
-function confirmAndResetSalesHistorySheet() {
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.alert('売上履歴シートをリセットしますか？', ui.ButtonSet.YES_NO);
 
-  if (response == ui.Button.YES) {
-    resetSalesHistorySheet();
-  }
-}
 
-function resetSalesHistorySheet() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-  if (sheet) {
-    sheet.getRange("2:247").clearContent();
-    SpreadsheetApp.getUi().alert("売上履歴シートがリセットされました。");
-  } else {
-    SpreadsheetApp.getUi().alert("「売上履歴」シートが見つかりません。");
-  }
-}
 
-// Googleドライブに作成したフォルダのページを開く
-// ------------------------------------------------------------------------------------------
+/******************************************************************
+メニュー：gasMenu
+function name |openFolder
+summary       |Googleドライブに作成したフォルダのページを開く
+******************************************************************/
+
 function openFolder() {
   // フォルダを開く関数
   var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
@@ -62,14 +48,27 @@ function openFolder() {
   }
 }
 
+/******************************************************************
+メニュー：gasMenu
+function name |reset_Sheet
+summary       |売上履歴シートの項目以外を削除
+******************************************************************/
+function reset_Sheet() {
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('売上履歴シートをリセットしますか？', ui.ButtonSet.YES_NO);
+
+  if (response == ui.Button.YES) {
+    resetSalesHistorySheet();
+  }
+}
 
 
-// 全ての情報を取得
-// ------------------------------------------------------------------------------------------
-function getAll() {
-  get_Walletables(); //口座
-  get_Taxes(); //税区分
-  get_AccountItems();//勘定科目
-  get_Partners();//取引先
-  get_Items();//品目
+function resetSalesHistorySheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
+  if (sheet) {
+    sheet.getRange("2:247").clearContent();
+    SpreadsheetApp.getUi().alert("売上履歴シートがリセットされました。");
+  } else {
+    SpreadsheetApp.getUi().alert("「売上履歴」シートが見つかりません。");
+  }
 }
