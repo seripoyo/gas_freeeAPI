@@ -4,56 +4,6 @@ var accessToken = freeeApp.getAccessToken();
 var companyId = getSelectedCompanyId();
 var headers = { "Authorization": "Bearer " + accessToken };
 
-/******************************************************************
-内容：品目の一覧を取得→合致しない情報を新規を登録
-使用API：https://api.freee.co.jp/api/1/taxes/companies/
-実行内容：GET・POST
-******************************************************************/
-
-function get_ItemsAndRegister() {
-
-  var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId + "&limit=3000";
-  var options = { "method": "get", "headers": headers };
-
-  var response = UrlFetchApp.fetch(requestUrl, options).getContentText();
-  var itemsResponse = JSON.parse(response);
-  var items = itemsResponse.items;
-
-  // 既存の品目の名前とIDをマッピング
-  var itemsMap = new Map(items.map(item => [item.name.trim(), item.id]));
-
-  // スプレッドシートからL列のデータを取得
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-  var lastRowInLColumn = getLastRowInColumn("売上履歴", 12);
-  var lColumnData = sheet.getRange(2, 12, lastRowInLColumn - 1).getValues();
-
-  var itemsData = [];
-
-  lColumnData.forEach(function (lValue) {
-    var itemName = lValue[0].trim();
-    if (itemName) {
-      var itemId = getExistingItemId(itemName, itemsMap);
-
-      if (itemId === null) {
-        // 新しい品目を登録
-        try {
-          itemId = registerNewItem(companyId, itemName, accessToken);
-        } catch (e) {
-          Logger.log("登録済です: " + itemName);
-        }
-      }
-
-      // 品目データを配列に追加
-      if (itemId !== null) {
-        itemsData.push({ id: itemId.toString(), name: itemName });
-      } else {
-        Logger.log("品目IDが見つかりません: " + itemName);
-      }
-    }
-  });
-
-  saveItemsData(itemsData);
-}
 
 /******************************************************************
 function name |get_PartnersAndRegister
