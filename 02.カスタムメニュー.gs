@@ -21,12 +21,12 @@ function updateMenu() {
 
   // freee連携のヒントメニューを作成
   var freeeMenu = ui.createMenu('freee連携のヒント');
-    freeeMenu.addItem('①freeeと連携', 'alertAuth');
-      freeeMenu.addItem('②事業所を選択', 'GetMyCompaniesID');
+  freeeMenu.addItem('①freeeと連携', 'alertAuth');
+  freeeMenu.addItem('②事業所を選択', 'GetMyCompaniesID');
   freeeMenu.addItem('コールバックURLはこちら', 'showCallbackUrl');
   freeeMenu.addItem('クライアントID＆シークレットの入力', 'inputClientInfo');
-    freeeMenu.addItem('売上データ送信', 'postDealsToFreee');
-    freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
+  freeeMenu.addItem('売上データ送信', 'postDealsToFreee');
+  freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
 
   freeeMenu.addToUi();
 }
@@ -62,9 +62,11 @@ function openFolder() {
   }
 }
 
+
+
 // 全ての情報を取得
 // ------------------------------------------------------------------------------------------
-function getAll(){
+function getAll() {
   get_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
