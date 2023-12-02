@@ -29,9 +29,9 @@ function manage_Walletables() {
   // データ処理
   var processedWalletables = walletables.map(function (walletable) {
     return {
-      id: parseInt(walletable.id, 10).toString(), // IDを整数に変換して文字列化
+      from_walletable_id: parseInt(walletable.id, 10).toString(), // IDを整数に変換して文字列化
       name: walletable.name,
-      type: walletable.type,
+      from_walletable_type: walletable.type,
       bank_id: walletable.bank_id ? parseInt(walletable.bank_id, 10).toString() : null, // bank_idがnullでなければ整数に変換
       walletable_balance: parseInt(walletable.walletable_balance, 10), // walletable_balanceを整数に変換
       last_balance: parseInt(walletable.last_balance, 10) // last_balanceを整数に変換
