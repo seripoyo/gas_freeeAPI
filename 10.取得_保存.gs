@@ -45,7 +45,7 @@ function get_Walletables() {
 /******************************************************************
 処理：get_Walletablesで保存した関数の取得
 ******************************************************************/
-function Saved_Walletables() {
+function saved_Walletables() {
   var userProperties = PropertiesService.getUserProperties();
   var walletablesDataString = userProperties.getProperty("walletablesData");
 
@@ -83,7 +83,7 @@ summary       |税区分一覧取得&保存
 requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
 method        |GET
 ******************************************************************/
-function getAndSaveMatchingTaxes() {
+function get_Taxes() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
@@ -112,12 +112,12 @@ function getAndSaveMatchingTaxes() {
 
 
 /******************************************************************
-function name |getAccountItems
+function name |get_AccountItems
 summary       |勘定科目一覧取得
 requestUrl    |https://api.freee.co.jp/api/1/account_items?company_id={companyId}
 method        |GET
 ******************************************************************/
-function getAndSaveMatchingAccountItems() {
+function get_AccountItems() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
@@ -161,7 +161,7 @@ summary       |取引先一覧取得
 requestUrl   |https://api.freee.co.jp/api/1/partners?company_id={companyId}
 method        |GET
 ******************************************************************/
-function getPartners() {
+function get_Partners() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
@@ -191,7 +191,7 @@ function getPartners() {
  * 取引先データの呼び出し関数 
  ******************************************************************/
 
-function getSavedPartnersData() {
+function saved_PartnersData() {
   var userProperties = PropertiesService.getUserProperties();
   var partnersDataString = userProperties.getProperty("partnersData");
 
@@ -207,12 +207,12 @@ function getSavedPartnersData() {
 
 
 /******************************************************************
-function name |getItems
+function name |get_Items
 summary       |品目一覧取得
 requestUrl    |https://api.freee.co.jp/api/1/items?company_id={companyId}
 method        |GET
 ******************************************************************/
-function getItems() {
+function get_Items() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();

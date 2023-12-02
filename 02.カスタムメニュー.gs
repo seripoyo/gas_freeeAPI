@@ -61,3 +61,12 @@ function openFolder() {
     SpreadsheetApp.getUi().showModalDialog(html, '別タブでフォルダを開いています');
   }
 }
+
+function getAll(){
+  getPartners();
+  getWalletables();
+  getAccountItems();
+  getItems();
+  getSections();
+  getTags();
+}
