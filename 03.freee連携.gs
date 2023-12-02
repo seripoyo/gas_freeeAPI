@@ -1,11 +1,16 @@
-/******************************************************************
-ファイル概要：カスタムメニューfreeeMenuの内容
-******************************************************************/
+
+/***====================================
+
+ * カスタムメニューfreeeMenuの内容となる関数を作成
+ * freeeMenuに追加される項目はfreee_menu.gsに記載
+
+ ===================================** */
 
 
+
 /******************************************************************
-function name |function alertAuth
-summary       |inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
+関数：alertAuth
+概要：inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
 ******************************************************************/
 function alertAuth() {
   var service = getService();
@@ -20,8 +25,8 @@ function alertAuth() {
 }
 
 /******************************************************************
-function name |GetMyCompaniesID
-summary       |事業所の一覧をFreee APIから取得し、選択可能なポップアップとして表示する関数
+関数：GetMyCompaniesID
+概要：事業所の一覧をFreee APIから取得し、選択可能なポップアップとして表示する関数
 ******************************************************************/
 function GetMyCompaniesID() {
   try {
@@ -43,28 +48,28 @@ function GetMyCompaniesID() {
 
     SelectModal(formattedData);
   } catch (e) {
-    // エラーが発生した場合のアラート表示
+    /** エラーが発生した場合のアラート表示
+    **********************************************************/
     SpreadsheetApp.getUi().alert("事業所の一覧を取得できませんでした。エラー: " + e.message);
   }
 }
+/** -----------------------------------------------------------------------------------------
+関数：SelectModal
+概要：業所一覧を取得し、このスプシで取引を送信する事業所を選択させるポップアップを出力
+---------------------------------------------------------------------------------------- **/
 
-
-// ------------------------------------------------------------------------------------------
-// 実行内容：GET
-// 処理：事業所一覧を取得し、このスプシで取引を送信する事業所を選択させるポップアップを出力
-/**  @param {Array} companies - 表示する事業所の一覧*/
-// ------------------------------------------------------------------------------------------
 function SelectModal(companies) {
   var html = '<style>' +
-    // 特定性を高めるためにIDセレクタを使用
+
+    /** 特定性を高めるためにIDセレクタを使用*************************************************/
     '#companyList li:before { position: absolute; content: ""; right: 0px; bottom: 0px; border-width: 0px 0px 15px 15px; border-style: solid; border-color: white white white #124fbd;}' +
     '#companyList li:hover, #companyList li.selected { border-left:10px solid #E91E63 !important; background-color: #fbeff7 !important; font-weight:bold; }' +
     '#companyList li:hover:before { border-color: white white white #E91E63 !important;}' +
     '.title { font-size: 18px; color: #333; padding: 10px; font-family: "Noto Sans JP"; }' +
     '</style>';
 
-  // タイトル部分のスタイルを適用
-  html += '<ul id="companyList" style="list-style-type: none; padding: 0;">'; // IDを追加
+  /** 事業所一覧を<li>要素としてループで出力**/
+  html += '<ul id="companyList" style="list-style-type: none; padding: 0;">'; /** IDを追加 **/
   companies.forEach(function (company, index) {
     html += '<li id="company_' + index + '" style="position:relative;cursor: pointer; margin-bottom: 1rem; padding: 0.7rem; border-left: 10px solid #4349c5; border-radius: 3px; background-color: #eff3ff; color: #333; line-height: 1.5; font-family: \'Noto Sans JP\', sans-serif;" ' +
       'onclick="selectCompany(' + company.id + ', ' + index + ')">' + company.name + '</li>';
@@ -86,12 +91,19 @@ function SelectModal(companies) {
   var ui = HtmlService.createHtmlOutput(html).setWidth(500).setHeight(200);
   SpreadsheetApp.getUi().showModalDialog(ui, "事業所を選択してください！");
 }
-// SelectModal 内で選択された事業所を保存する関数
+// 
+
+/******************************************************************
+関数：setSelectedCompanyId
+概要：選択されたcompanyIdをselectedCompanyIdに保存
+*******************************************************************/
 function setSelectedCompanyId(companyId) {
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("selectedCompanyId", companyId);
 
-  // 事業所選択が完了したら他の関数を実行
+  // 
+  /** 事業所選択が完了したら他の関数を実行
+  ********************************************************/
   onCompanySelected();
 }
 function getSelectedCompanyId() {
@@ -101,8 +113,8 @@ function getSelectedCompanyId() {
 }
 
 /******************************************************************
-function name |onCompanySelected
-summary       |事業所IDを取得したら連動して実行
+関数：onCompanySelected
+概要：SelectModal事業所がで選択され、そのIDを取得したら連動して実行
 ******************************************************************/
 
 function onCompanySelected() {
@@ -113,9 +125,11 @@ function onCompanySelected() {
   manage_Partners();//取引先
   get_Items_Register();//品目
 }
+
+
 /******************************************************************
-function name |inputClientInfo
-summary       |アプリ詳細画面からClient IDとClient Secretをカスタムメニューへコピペ
+関数：inputClientInfo
+概要：アプリ詳細画面からClient IDとClient Secretをカスタムメニューへコピペ
 ******************************************************************/
 // カスタムダイアログを表示する関数
 function inputClientInfo() {
@@ -133,8 +147,8 @@ function saveClientInfo(clientId, clientSecret) {
 }
 
 /******************************************************************
-function name |showCallbackUrl
-summary       |認証用コールバックURLのコピペできるように出力
+関数：showCallbackUrl
+概要：認証用コールバックURLのコピペできるように出力
 ******************************************************************/
 
 function showCallbackUrl() {
@@ -154,27 +168,14 @@ function showCallbackUrl() {
   var html = HtmlService.createHtmlOutput(htmlContent)
     .setWidth(400)
     .setHeight(100);
-  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); // ここを変更しました
+  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); 
 }
-
 
 /******************************************************************
-function name |showAlertWithAccessToken
-summary       |メニュー選択時にアクセストークンをアラートで出力
+関数：getService
+概要：freeeAPIのサービスを取得
 ******************************************************************/
 
-function showAlertWithAccessToken() {
-  var service = getService();
-  if (service.hasAccess()) {
-    var accessToken = service.getAccessToken();
-    SpreadsheetApp.getUi().alert("アクセストークン: " + accessToken);
-  } else {
-    SpreadsheetApp.getUi().alert("アクセストークンを取得できませんでした。");
-  }
-}
-
-// freeeAPIのサービスを取得
-// ------------------------------------------------------------
 function getService() {
   var userProperties = PropertiesService.getUserProperties();
   var clientId = userProperties.getProperty('freeeClientId');
@@ -188,9 +189,11 @@ function getService() {
     .setCallbackFunction('authCallback')
     .setPropertyStore(PropertiesService.getUserProperties());
 }
+/******************************************************************
+関数：authCallback
+概要：認証用のコールバック関数(アクセストークンの取得)
+******************************************************************/
 
-//　認証用のコールバック関数(アクセストークンの取得)
-// ------------------------------------------------------------
 function authCallback(request) {
   var service = getService();
   var isAuthorized = service.handleCallback(request);
@@ -201,11 +204,26 @@ function authCallback(request) {
   }
 }
 
+/******************************************************************
+関数：showAlertWithAccessToken
+概要：メニュー選択時にアクセストークンをアラートで出力
+******************************************************************/
+
+function showAlertWithAccessToken() {
+  var service = getService();
+  if (service.hasAccess()) {
+    var accessToken = service.getAccessToken();
+    SpreadsheetApp.getUi().alert("アクセストークン: " + accessToken);
+  } else {
+    SpreadsheetApp.getUi().alert("アクセストークンを取得できませんでした。");
+  }
+}
 
 /******************************************************************
-function name |postDeals
-summary       |取引の送信
+関数：postDeals
+概要：取引の送信
 ******************************************************************/
+
 function postDeals() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
@@ -336,8 +354,8 @@ function postDeals() {
 }
 
 /******************************************************************
-function name |clearService
-summary       |認証解除
+関数：clearService
+概要：認証解除
 ******************************************************************/
 function clearService() {
   OAuth2.createService("freee")
