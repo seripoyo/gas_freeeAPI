@@ -40,7 +40,7 @@ function get_Walletables() {
   // 変換したデータをプロパティサービスに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("walletablesData", JSON.stringify(processedWalletables));
-    Logger.log("保存した口座一覧: " + JSON.stringify(walletablesData));
+  Logger.log("保存した口座一覧: " + JSON.stringify(processedWalletables));
 }
 
 /******************************************************************
@@ -53,7 +53,7 @@ function saved_Walletables() {
   if (walletablesDataString) {
     var walletablesData = JSON.parse(walletablesDataString);
 
-    var processedWalletables = walletablesData.map(function(walletable) {
+    var processedWalletables = walletablesData.map(function (walletable) {
       // IDを整数に変換
       var id = String(walletable.id).replace('.0', '');
       // walletable_balanceとlast_balanceを文字列に変換して末尾の".0"を取り除く
@@ -104,11 +104,11 @@ function get_Taxes() {
     };
   });
 
-  Logger.log(taxesData);
 
   // 税区分データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("taxesData", JSON.stringify(taxesData));
+  Logger.log("保存した税区分: " + JSON.stringify(taxesData));
 }
 
 
@@ -191,6 +191,7 @@ function get_Partners() {
   // 取引先データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("partnersData", JSON.stringify(partnersData));
+  Logger.log("保存した取引先一覧: " + JSON.stringify(partnersData));
 }
 
 
@@ -242,6 +243,7 @@ function get_Items() {
   // 品目データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("itemsData", JSON.stringify(itemsData));
+  Logger.log("保存した品目: " + JSON.stringify(itemsData));
 }
 
 
