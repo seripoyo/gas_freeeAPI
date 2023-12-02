@@ -65,3 +65,12 @@ function SelectModal(companies) {
   var ui = HtmlService.createHtmlOutput(html).setWidth(500).setHeight(200);
   SpreadsheetApp.getUi().showModalDialog(ui, "事業所を選択してください！");
 }
+function setSelectedCompanyId(companyId) {
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("selectedCompanyId", companyId.toString());
+}
+function getSelectedCompanyId() {
+  var userProperties = PropertiesService.getUserProperties();
+  var companyId = userProperties.getProperty("selectedCompanyId");
+  return companyId ? parseInt(companyId, 10) : null; // 数値として返す
+}

@@ -2,10 +2,6 @@
  * 各関数の共通変数
 ******************************************************************/
 
-var freeeApp = getService();
-var accessToken = freeeApp.getAccessToken();
-var companyId = getSelectedCompanyId();
-
 
 /******************************************************************
 function name |get_Walletables
@@ -14,6 +10,9 @@ requestUrl    |https://api.freee.co.jp/api/1/walletables?company_id={companyId}&
 method        |GET
 ******************************************************************/
 function get_Walletables() {
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/walletables?company_id=" + companyId + "&with_balance=true";
   var headers = { "Authorization": "Bearer " + accessToken };
 
@@ -27,7 +26,7 @@ function get_Walletables() {
   var walletables = walletablesResponse.walletables;
 
   // IDを整数に変換して保存
-  var processedWalletables = walletables.map(function(walletable) {
+  var processedWalletables = walletables.map(function (walletable) {
     return {
       id: parseInt(walletable.id), // IDを整数に変換
       name: walletable.name,
@@ -49,28 +48,34 @@ function get_Walletables() {
 function Saved_Walletables() {
   var userProperties = PropertiesService.getUserProperties();
   var walletablesDataString = userProperties.getProperty("walletablesData");
-  
+
   if (walletablesDataString) {
     var walletablesData = JSON.parse(walletablesDataString);
 
-    // 数値が含まれるプロパティを整数に変換
     var processedWalletables = walletablesData.map(function(walletable) {
+      // IDを整数に変換
+      var id = String(walletable.id).replace('.0', '');
+      // walletable_balanceとlast_balanceを文字列に変換して末尾の".0"を取り除く
+      var walletable_balance = String(walletable.walletable_balance).replace('.0', '');
+      var last_balance = String(walletable.last_balance).replace('.0', '');
+
       return {
-        ...walletable, // その他のプロパティを維持
-        id: parseInt(walletable.id, 10), // IDを整数に変換
-        walletable_balance: parseInt(walletable.walletable_balance, 10), // walletable_balanceを整数に変換
-        last_balance: parseInt(walletable.last_balance, 10) // last_balanceを整数に変換
+        ...walletable,
+        id: id,
+        walletable_balance: walletable_balance,
+        last_balance: last_balance
       };
     });
 
     Logger.log(processedWalletables);
-    return processedWalletables; // 変換後のデータを返す
+    return processedWalletables;
 
   } else {
     Logger.log("No walletables data found.");
-    return []; // データがない場合は空の配列を返す
+    return [];
   }
 }
+
 
 /******************************************************************
 function name |getTaxes
@@ -79,7 +84,9 @@ requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
 method        |GET
 ******************************************************************/
 function getAndSaveMatchingTaxes() {
-
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/taxes/companies/" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -89,7 +96,7 @@ function getAndSaveMatchingTaxes() {
   var taxes = taxesResponse.taxes;
 
   // 税区分一覧のIDを整数に変換して配列に格納
-  var taxesData = taxes.map(function(tax) {
+  var taxesData = taxes.map(function (tax) {
     return {
       id: parseInt(tax.code, 10).toString(), // IDを整数に変換して文字列化
       name_ja: tax.name_ja
@@ -111,7 +118,9 @@ requestUrl    |https://api.freee.co.jp/api/1/account_items?company_id={companyId
 method        |GET
 ******************************************************************/
 function getAndSaveMatchingAccountItems() {
-
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/account_items?company_id=" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -153,7 +162,9 @@ requestUrl   |https://api.freee.co.jp/api/1/partners?company_id={companyId}
 method        |GET
 ******************************************************************/
 function getPartners() {
-
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/partners?company_id=" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -163,10 +174,10 @@ function getPartners() {
   var partners = partnersResponse.partners;
 
   // 配列を作成し、要素を格納（IDを整数に変換）
-  var partnersData = partners.map(function(partner) {
-    return { 
+  var partnersData = partners.map(function (partner) {
+    return {
       id: parseInt(partner.id, 10).toString(), // IDを整数に変換して文字列化
-      name: partner.name 
+      name: partner.name
     };
   });
 
@@ -202,7 +213,9 @@ requestUrl    |https://api.freee.co.jp/api/1/items?company_id={companyId}
 method        |GET
 ******************************************************************/
 function getItems() {
-
+  var freeeApp = getService();
+  var accessToken = freeeApp.getAccessToken();
+  var companyId = getSelectedCompanyId();
   var requestUrl = "https://api.freee.co.jp/api/1/items?company_id=" + companyId + "&limit=3000";
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -212,7 +225,7 @@ function getItems() {
   var items = itemsResponse.items;
 
   // 配列を作成し、要素を格納（IDを整数に変換）
-  var itemsData = items.map(function(item) {
+  var itemsData = items.map(function (item) {
     return {
       id: parseInt(item.id, 10).toString(), // IDを整数に変換して文字列化
       name: item.name

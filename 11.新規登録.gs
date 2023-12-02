@@ -4,7 +4,6 @@ var accessToken = freeeApp.getAccessToken();
 var companyId = getSelectedCompanyId();
 var headers = { "Authorization": "Bearer " + accessToken };
 
-
 /******************************************************************
 内容：品目の一覧を取得→合致しない情報を新規を登録
 使用API：https://api.freee.co.jp/api/1/taxes/companies/
@@ -125,7 +124,7 @@ function create_NewPartner(companyId, partnerName, accessToken) {
   return newPartner.id; // 新しく登録された取引先のIDを返す
 }
 
-function savePartnersData(partners) {
+function save_PartnersData(partners) {
   // partnersが配列であることを確認
   if (!Array.isArray(partners)) {
     Logger.log("エラー: partnersは配列ではありません。");
