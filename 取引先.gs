@@ -44,7 +44,7 @@ function manage_Partners() {
       try {
         var newPartnerId = createNewPartner(companyId, partnerName, accessToken);
         if (newPartnerId) {  // 登録成功時のみログに出力
-          newPartners.push({ name: partnerName, id: newPartnerId });
+          newPartners.push({ name: partnerName, partner_id: newPartnerId });
           Logger.log("登録しました: " + partnerName + " (ID: " + newPartnerId + ")");
         } else {
           Logger.log("登録に失敗しました: " + partnerName);
@@ -103,7 +103,7 @@ function createNewPartner(companyId, partnerName, accessToken) {
 }
 function logNewPartners(registeredPartners) {
   registeredPartners.forEach(p => {
-    Logger.log("登録済み取引先: " + p.name + " (ID: " + p.id + ")");
+    Logger.log("登録済み取引先: " + p.name + " (partner_id: " + p.id + ")");
   });
 }
 
@@ -116,7 +116,7 @@ function savePartnersData(partners) {
   // 配列を作成し、要素を格納（IDを整数に変換）
   var partnersData = partners.map(function (partner) {
     return {
-      id: parseInt(partner.id, 10), // IDを整数に変換
+      partner_id: parseInt(partner.id, 10), // IDを整数に変換
       name: partner.name
     };
   });
