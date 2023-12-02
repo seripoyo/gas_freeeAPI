@@ -110,7 +110,7 @@ function onCompanySelected() {
   get_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
-  get_Partners();//取引先
+  manage_Partners();//取引先
   get_Items_Register();//品目
 }
 /******************************************************************
