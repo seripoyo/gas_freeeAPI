@@ -5,6 +5,58 @@ title               |OAuth2
 project_key  |1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF
 ***********************************************************************************
 */
+  freeeMenu.addItem('①freeeと連携', 'alertAuth');
+  freeeMenu.addItem('②事業所を選択', 'GetMyCompaniesID');
+  freeeMenu.addItem('コールバックURLはこちら', 'showCallbackUrl');
+  freeeMenu.addItem('クライアントID＆シークレットの入力', 'inputClientInfo');
+  freeeMenu.addItem('売上データ送信', 'postDealsToFreee');
+  freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
+
+
+
+// inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+function alertAuth() {
+  var service = getService();
+  var authorizationUrl = service.getAuthorizationUrl();
+
+  var html = HtmlService.createHtmlOutput('<html><body>' +
+    '<a href="' + authorizationUrl + '" target="_blank" onclick="google.script.host.close();">認証ページを開く</a>' +
+    '</body></html>')
+    .setWidth(400)
+    .setHeight(60);
+  SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
+}
+
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 実行内容：GET
+// 処理：事業所の一覧をFreee APIから取得し、選択可能なポップアップとして表示する関数
+// 使用API：https://api.freee.co.jp/api/1/companies
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+function GetMyCompaniesID() {
+  try {
+    var accessToken = getService().getAccessToken();
+    var requestUrl = "https://api.freee.co.jp/api/1/companies";
+    var params = {
+      method: "get",
+      headers: { Authorization: "Bearer " + accessToken },
+    };
+
+    var response = UrlFetchApp.fetch(requestUrl, params);
+    var responseData = JSON.parse(response.getContentText());
+    var formattedData = responseData.companies.map((company) => {
+      return {
+        id: company.id,
+        name: company.name || company.display_name || "名称未設定",
+      };
+    });
+
+    SelectModal(formattedData);
+  } catch (e) {
+    // エラーが発生した場合のアラート表示
+    SpreadsheetApp.getUi().alert("事業所の一覧を取得できませんでした。エラー: " + e.message);
+  }
+}
 
 // 各自で作成したアプリのアプリ詳細画面からClient IDとClient Secretをカスタムメニューへコピペ
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
@@ -23,31 +75,9 @@ function saveClientInfo(clientId, clientSecret) {
     .setProperty('freeeClientSecret', clientSecret);
 }
 
-// inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
-// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-function alertAuth() {
-  var service = getService();
-  var authorizationUrl = service.getAuthorizationUrl();
 
-  var html = HtmlService.createHtmlOutput('<html><body>' +
-    '<a href="' + authorizationUrl + '" target="_blank" onclick="google.script.host.close();">認証ページを開く</a>' +
-    '</body></html>')
-    .setWidth(400)
-    .setHeight(60);
-  SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
-}
 
-//　認証用のコールバック関数(アクセストークンの取得)
-// ------------------------------------------------------------
-function authCallback(request) {
-  var service = getService();
-  var isAuthorized = service.handleCallback(request);
-  if (isAuthorized) {
-    return HtmlService.createHtmlOutput('認証に成功しました。このウィンドウを閉じてください。');
-  } else {
-    return HtmlService.createHtmlOutput('認証に失敗しました。');
-  }
-}
+
 // 認証用コールバックURLのコピペできるように出力
 // ------------------------------------------------------------
 function showCallbackUrl() {
@@ -70,6 +100,10 @@ function showCallbackUrl() {
   SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); // ここを変更しました
 }
 
+
+
+
+
 // freeeAPIのサービスを取得
 // ------------------------------------------------------------
 function getService() {
@@ -86,7 +120,17 @@ function getService() {
     .setPropertyStore(PropertiesService.getUserProperties());
 }
 
-
+//　認証用のコールバック関数(アクセストークンの取得)
+// ------------------------------------------------------------
+function authCallback(request) {
+  var service = getService();
+  var isAuthorized = service.handleCallback(request);
+  if (isAuthorized) {
+    return HtmlService.createHtmlOutput('認証に成功しました。このウィンドウを閉じてください。');
+  } else {
+    return HtmlService.createHtmlOutput('認証に失敗しました。');
+  }
+}
 
 
 /******************************************************************
