@@ -2,17 +2,6 @@
 ファイル概要：カスタムメニューfreeeMenuの内容
 ******************************************************************/
 
-/******************************************************************
-function name |getAll
-summary       |事業所選択＋全情報の取得
-******************************************************************/
-function getAll() {
-  get_Walletables(); //口座
-  get_Taxes(); //税区分
-  get_AccountItems();//勘定科目
-  get_Partners();//取引先
-  get_Items();//品目
-}
 
 /******************************************************************
 function name |function alertAuth
@@ -67,18 +56,18 @@ function GetMyCompaniesID() {
 // ------------------------------------------------------------------------------------------
 function SelectModal(companies) {
   var html = '<style>' +
-             // 特定性を高めるためにIDセレクタを使用
-             '#companyList li:before { position: absolute; content: ""; right: 0px; bottom: 0px; border-width: 0px 0px 15px 15px; border-style: solid; border-color: white white white #124fbd;}' +
-             '#companyList li:hover, #companyList li.selected { border-left:10px solid #E91E63 !important; background-color: #fbeff7 !important; font-weight:bold; }' +
-             '#companyList li:hover:before { border-color: white white white #E91E63 !important;}' +
-             '.title { font-size: 18px; color: #333; padding: 10px; font-family: "Noto Sans JP"; }' +
-             '</style>';
+    // 特定性を高めるためにIDセレクタを使用
+    '#companyList li:before { position: absolute; content: ""; right: 0px; bottom: 0px; border-width: 0px 0px 15px 15px; border-style: solid; border-color: white white white #124fbd;}' +
+    '#companyList li:hover, #companyList li.selected { border-left:10px solid #E91E63 !important; background-color: #fbeff7 !important; font-weight:bold; }' +
+    '#companyList li:hover:before { border-color: white white white #E91E63 !important;}' +
+    '.title { font-size: 18px; color: #333; padding: 10px; font-family: "Noto Sans JP"; }' +
+    '</style>';
 
   // タイトル部分のスタイルを適用
   html += '<ul id="companyList" style="list-style-type: none; padding: 0;">'; // IDを追加
   companies.forEach(function (company, index) {
     html += '<li id="company_' + index + '" style="position:relative;cursor: pointer; margin-bottom: 1rem; padding: 0.7rem; border-left: 10px solid #4349c5; border-radius: 3px; background-color: #eff3ff; color: #333; line-height: 1.5; font-family: \'Noto Sans JP\', sans-serif;" ' +
-            'onclick="selectCompany(' + company.id + ', ' + index + ')">' + company.name + '</li>';
+      'onclick="selectCompany(' + company.id + ', ' + index + ')">' + company.name + '</li>';
   });
   html += '</ul>';
 
@@ -97,9 +86,13 @@ function SelectModal(companies) {
   var ui = HtmlService.createHtmlOutput(html).setWidth(500).setHeight(200);
   SpreadsheetApp.getUi().showModalDialog(ui, "事業所を選択してください！");
 }
+// SelectModal 内で選択された事業所を保存する関数
 function setSelectedCompanyId(companyId) {
   var userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty("selectedCompanyId", companyId.toString());
+  userProperties.setProperty("selectedCompanyId", companyId);
+
+  // 事業所選択が完了したら他の関数を実行
+  onCompanySelected();
 }
 function getSelectedCompanyId() {
   var userProperties = PropertiesService.getUserProperties();
@@ -107,6 +100,19 @@ function getSelectedCompanyId() {
   return companyId ? parseInt(companyId, 10) : null; // 数値として返す
 }
 
+/******************************************************************
+function name |onCompanySelected
+summary       |事業所IDを取得したら連動して実行
+******************************************************************/
+
+function onCompanySelected() {
+  // 他のAPI呼び出し関数を実行
+  get_Walletables(); //口座
+  get_Taxes(); //税区分
+  get_AccountItems();//勘定科目
+  get_Partners();//取引先
+  get_Items();//品目
+}
 /******************************************************************
 function name |inputClientInfo
 summary       |アプリ詳細画面からClient IDとClient Secretをカスタムメニューへコピペ
@@ -204,129 +210,129 @@ function postDeals() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var requestUrl = "https://api.freee.co.jp/api/1/deals";
-  var headers = { "Authorization" : "Bearer " + accessToken };
-  var dealsSheet = ss.getSheetByName( "取引" );
-  var dealsColumnLastRow = getLastRowNumber( 2 , "取引" );
-  var detailsColumnLastRow = getLastRowNumber( 7 , "取引" );
-  var paymentsColumnLastRow = getLastRowNumber( 14 , "取引" );
-  var dealsLastRow = Math.max( dealsColumnLastRow , detailsColumnLastRow , paymentsColumnLastRow );
-  var dealsValues = dealsSheet.getRange( 1 , 1 , dealsLastRow , 17 ).getValues();
+  var headers = { "Authorization": "Bearer " + accessToken };
+  var dealsSheet = ss.getSheetByName("取引");
+  var dealsColumnLastRow = getLastRowNumber(2, "取引");
+  var detailsColumnLastRow = getLastRowNumber(7, "取引");
+  var paymentsColumnLastRow = getLastRowNumber(14, "取引");
+  var dealsLastRow = Math.max(dealsColumnLastRow, detailsColumnLastRow, paymentsColumnLastRow);
+  var dealsValues = dealsSheet.getRange(1, 1, dealsLastRow, 17).getValues();
   var countDealsRowSkip = 0;
   var countPostedDeals = 0;
   var countErrorDeals = 0;
-  var details = []; 
+  var details = [];
   var payments = [];
-  
-  for ( var i = 1 ; i < dealsLastRow ; i++ ) {
-    var detailsRow = String( dealsValues[ i ][ 6 ] );
-    var paymentsRow = String( dealsValues[ i ][ 13 ] );
-    
-    if ( i + 1 == dealsLastRow ) {
+
+  for (var i = 1; i < dealsLastRow; i++) {
+    var detailsRow = String(dealsValues[i][6]);
+    var paymentsRow = String(dealsValues[i][13]);
+
+    if (i + 1 == dealsLastRow) {
       var nextdealsRow = "取引を作成する";  //最終行に到達したら強制的に取引を作成
-      
+
     } else {
-      var nextdealsRow = String( dealsValues[ i + 1 ][ 1 ] );
+      var nextdealsRow = String(dealsValues[i + 1][1]);
     };
-    
+
     //detailsの作成
-    if ( detailsRow != "" ) {
-      var accountItemId = parseInt( dealsValues[ i ][ 6 ] );
-      var taxCode = parseInt( dealsValues[ i ][ 7 ] );
-      var itemId = parseInt( dealsValues[ i ][ 8 ] );
-      var sectionId = parseInt( dealsValues[ i ][ 9 ] );
-      var tagIds =String( dealsValues[ i ][ 10 ] ).split( "," );
-      
-      if ( tagIds == "" ) {
+    if (detailsRow != "") {
+      var accountItemId = parseInt(dealsValues[i][6]);
+      var taxCode = parseInt(dealsValues[i][7]);
+      var itemId = parseInt(dealsValues[i][8]);
+      var sectionId = parseInt(dealsValues[i][9]);
+      var tagIds = String(dealsValues[i][10]).split(",");
+
+      if (tagIds == "") {
         tagIds = [];
       };
-      
-      var amountDetails = parseInt( dealsValues[ i ][ 11 ] );
-      var description = String( dealsValues[ i ][ 12 ] );
 
-      details.push( {
-        "account_item_id" : accountItemId,
-        "tax_code" : taxCode,
-        "item_id" : isNaN(itemId) ? undefined: itemId,
-        "section_id" : isNaN(sectionId) ? undefined: sectionId,
-        "tag_ids" : tagIds,
-        "amount" : amountDetails,
-        "description" : description
+      var amountDetails = parseInt(dealsValues[i][11]);
+      var description = String(dealsValues[i][12]);
+
+      details.push({
+        "account_item_id": accountItemId,
+        "tax_code": taxCode,
+        "item_id": isNaN(itemId) ? undefined : itemId,
+        "section_id": isNaN(sectionId) ? undefined : sectionId,
+        "tag_ids": tagIds,
+        "amount": amountDetails,
+        "description": description
       });
     };
-    
+
     //paymentsの作成
-    if ( paymentsRow != "" ) {
-      var date = Utilities.formatDate( dealsValues[ i ][ 13 ] , "JST" , "yyyy-MM-dd" );
-      var fromWalletableType = String( dealsValues[ i ][ 14 ] );
-      var fromWalletableId = parseInt( dealsValues[ i ][ 15 ] );
-      var amountPayments = parseInt( dealsValues[ i ][ 16 ] );
-      
-      payments.push( {
-        "date" : date ,
-        "from_walletable_type" : fromWalletableType,
-        "from_walletable_id" : fromWalletableId,
-        "amount" : amountPayments
+    if (paymentsRow != "") {
+      var date = Utilities.formatDate(dealsValues[i][13], "JST", "yyyy-MM-dd");
+      var fromWalletableType = String(dealsValues[i][14]);
+      var fromWalletableId = parseInt(dealsValues[i][15]);
+      var amountPayments = parseInt(dealsValues[i][16]);
+
+      payments.push({
+        "date": date,
+        "from_walletable_type": fromWalletableType,
+        "from_walletable_id": fromWalletableId,
+        "amount": amountPayments
       });
     };
-    
+
     //取引を作成
-    if ( nextdealsRow == "" ) { 
+    if (nextdealsRow == "") {
       countDealsRowSkip++;
-      
+
     } else {
-      var companyId = parseInt( dealsValues[ i - countDealsRowSkip ][ 0 ] );
-      
-      if ( dealsValues[ i - countDealsRowSkip ][ 1 ] != "" ) {
-        var issueDate = Utilities.formatDate( dealsValues[ i - countDealsRowSkip ][ 1 ] , "JST" , "yyyy-MM-dd" );
+      var companyId = parseInt(dealsValues[i - countDealsRowSkip][0]);
+
+      if (dealsValues[i - countDealsRowSkip][1] != "") {
+        var issueDate = Utilities.formatDate(dealsValues[i - countDealsRowSkip][1], "JST", "yyyy-MM-dd");
       };
-      
-      if ( dealsValues[ i - countDealsRowSkip ][ 2 ] != "" ){
-        var dueDate = Utilities.formatDate( dealsValues[ i - countDealsRowSkip][ 2 ] , "JST" , "yyyy-MM-dd" );
+
+      if (dealsValues[i - countDealsRowSkip][2] != "") {
+        var dueDate = Utilities.formatDate(dealsValues[i - countDealsRowSkip][2], "JST", "yyyy-MM-dd");
       };
-      
-      var type = String( dealsValues[ i - countDealsRowSkip ][ 3 ]);
-      var partnerId = parseInt( dealsValues[ i - countDealsRowSkip ][ 4 ] , 10 );
-      var refNumber = String( dealsValues[ i - countDealsRowSkip][ 5 ]);
-      
-      var requestBody = 
-          {
-            "company_id" : companyId,
-            "issue_date" : issueDate,
-            "due_date" : dueDate,
-            "type" : type,
-            "partner_id" : isNaN(partnerId) ? undefined: partnerId,
-            "ref_number" : refNumber,
-            "details" : details,
-            "payments" : payments
-          };
-      
+
+      var type = String(dealsValues[i - countDealsRowSkip][3]);
+      var partnerId = parseInt(dealsValues[i - countDealsRowSkip][4], 10);
+      var refNumber = String(dealsValues[i - countDealsRowSkip][5]);
+
+      var requestBody =
+      {
+        "company_id": companyId,
+        "issue_date": issueDate,
+        "due_date": dueDate,
+        "type": type,
+        "partner_id": isNaN(partnerId) ? undefined : partnerId,
+        "ref_number": refNumber,
+        "details": details,
+        "payments": payments
+      };
+
       // POSTオプション
       var options = {
-        "method" : "POST",
-        "contentType" : "application/json",
-        "headers" : headers,
-        "payload" : JSON.stringify( requestBody ),
-        muteHttpExceptions : true
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": headers,
+        "payload": JSON.stringify(requestBody),
+        muteHttpExceptions: true
       };
-      
-      var res = UrlFetchApp.fetch( requestUrl , options );
-      
-      if ( res.getResponseCode() == 201 ) {
+
+      var res = UrlFetchApp.fetch(requestUrl, options);
+
+      if (res.getResponseCode() == 201) {
         countPostedDeals++;
       } else {
         countErrorDeals++;
       };
-      
+
       countDealsRowSkip = 0;
       details.length = 0;
       payments.length = 0;
     };
   };
-  SpreadsheetApp.getUi().alert( countPostedDeals + "件の取引を送信しました" );
-  if ( countErrorDeals != 0 ) {
-    SpreadsheetApp.getUi().alert( countErrorDeals + "件の取引の送信に失敗しました" );
+  SpreadsheetApp.getUi().alert(countPostedDeals + "件の取引を送信しました");
+  if (countErrorDeals != 0) {
+    SpreadsheetApp.getUi().alert(countErrorDeals + "件の取引の送信に失敗しました");
   };
-  
+
 }
 
 /******************************************************************
