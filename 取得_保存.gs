@@ -1,15 +1,15 @@
 /******************************************************************
- * 各関数の共通変数
+ * 新規登録をする必要がない各情報の取得＆保存
+ * このファイルでは口座・税区分・勘定科目を一覧で取得＆保存する
+ * 品目と取引先は登録も行い長くなるので別ファイルに格納
 ******************************************************************/
 
 
 /******************************************************************
-function name |get_Walletables
-summary       |口座一覧取得
-requestUrl    |https://api.freee.co.jp/api/1/walletables?company_id={companyId}&with_balance=true
-method        |GET
+関数：get_Walletables
+概要：口座一覧取得
 ******************************************************************/
-function get_Walletables() {
+function manage_Walletables() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var companyId = getSelectedCompanyId();
@@ -21,68 +21,33 @@ function get_Walletables() {
     "headers": headers
   };
 
+  // APIからデータ取得
   var res = UrlFetchApp.fetch(requestUrl, options).getContentText();
   var walletablesResponse = JSON.parse(res);
   var walletables = walletablesResponse.walletables;
 
-  // IDを整数に変換して保存
+  // データ処理
   var processedWalletables = walletables.map(function (walletable) {
     return {
-      id: parseInt(walletable.id), // IDを整数に変換
+      id: parseInt(walletable.id, 10).toString(), // IDを整数に変換して文字列化
       name: walletable.name,
       type: walletable.type,
-      bank_id: walletable.bank_id,
-      walletable_balance: walletable.walletable_balance,
-      last_balance: walletable.last_balance
+      bank_id: walletable.bank_id ? parseInt(walletable.bank_id, 10).toString() : null, // bank_idがnullでなければ整数に変換
+      walletable_balance: parseInt(walletable.walletable_balance, 10), // walletable_balanceを整数に変換
+      last_balance: parseInt(walletable.last_balance, 10) // last_balanceを整数に変換
     };
   });
 
-  // 変換したデータをプロパティサービスに保存
+  // データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("walletablesData", JSON.stringify(processedWalletables));
   Logger.log("保存した口座一覧: " + JSON.stringify(processedWalletables));
 }
 
-/******************************************************************
-処理：get_Walletablesで保存した関数の取得
-******************************************************************/
-function saved_Walletables() {
-  var userProperties = PropertiesService.getUserProperties();
-  var walletablesDataString = userProperties.getProperty("walletablesData");
-
-  if (walletablesDataString) {
-    var walletablesData = JSON.parse(walletablesDataString);
-
-    var processedWalletables = walletablesData.map(function (walletable) {
-      // IDを整数に変換
-      var id = String(walletable.id).replace('.0', '');
-      // walletable_balanceとlast_balanceを文字列に変換して末尾の".0"を取り除く
-      var walletable_balance = String(walletable.walletable_balance).replace('.0', '');
-      var last_balance = String(walletable.last_balance).replace('.0', '');
-
-      return {
-        ...walletable,
-        id: id,
-        walletable_balance: walletable_balance,
-        last_balance: last_balance
-      };
-    });
-
-    Logger.log(processedWalletables);
-    return processedWalletables;
-
-  } else {
-    Logger.log("No walletables data found.");
-    return [];
-  }
-}
-
 
 /******************************************************************
-function name |getTaxes
-summary       |税区分一覧取得&保存
-requestUrl   |https://api.freee.co.jp/api/1/taxes/companies/
-method        |GET
+関数：get_Taxes
+概要：税区分一覧取得&保存
 ******************************************************************/
 function get_Taxes() {
   var freeeApp = getService();
@@ -104,19 +69,16 @@ function get_Taxes() {
     };
   });
 
-
   // 税区分データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("taxesData", JSON.stringify(taxesData));
   Logger.log("保存した税区分: " + JSON.stringify(taxesData));
+
 }
 
-
 /******************************************************************
-function name |get_AccountItems
-summary       |勘定科目一覧取得
-requestUrl    |https://api.freee.co.jp/api/1/account_items?company_id={companyId}
-method        |GET
+関数：get_AccountItems
+概要：勘定科目一覧の取得
 ******************************************************************/
 function get_AccountItems() {
   var freeeApp = getService();
