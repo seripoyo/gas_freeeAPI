@@ -56,9 +56,8 @@ function get_ItemsAndRegister() {
 }
 
 /******************************************************************
+function name |get_PartnersAndRegister
 内容：取引先一覧を取得→合致しない情報を新規を登録
-使用API：https://api.freee.co.jp/api/1/taxes/companies/
-実行内容：GET・POST
 ******************************************************************/
 function get_PartnersAndRegister() {
   var requestUrl = "https://api.freee.co.jp/api/1/partners?company_id=" + companyId;
