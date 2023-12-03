@@ -73,22 +73,22 @@ function dealsTranscription() {
 
     //勘定科目
 
-    // 勘定科目名からaccount_item_idを検索する関数
+    // 勘定科目名からidを検索する関数
     function findAccountIdByName(accountItemsData, accountItemName) {
       for (var i = 0; i < accountItemsData.length; i++) {
         if (accountItemsData[i].name === accountItemName) {
-          return accountItemsData[i].account_item_id; // 該当するaccount_item_idを返す
+          return accountItemsData[i].id; // 該当するidを返す
         }
       }
       return ''; // 該当する勘定科目がなければ空文字を返す
     }
     var savedAccountItemsData = JSON.parse(PropertiesService.getUserProperties().getProperty("matchingAccountItems"));
 
-    // 勘定科目名に基づいてaccount_item_idを検索
+    // 勘定科目名に基づいてidを検索
     var accountItemName = row[5]; // 勘定科目名
     var accountId = findAccountIdByName(savedAccountItemsData, accountItemName);
 
-    // 取引シートにaccount_item_idを設定
+    // 取引シートにidを設定
     if (accountId) {
       targetSheet.getRange(i + 2, 7).setValue(accountId);
     }
@@ -124,15 +124,25 @@ function dealsTranscription() {
     //   };
     // };
 
-    //品目  品目でaccount_item_id,
-    // var itemName = sourceSheetValues[i][11];
-    // for (var e = 0; e < itemsLastRow; e++) {
-    //   if (itemsValues[e][2] == itemName) {
-    //     targetSheet.getRange(i + 2, 9).setValue(itemsValues[e][0]);
-    //     break;
-    //   };
-    // };
+    // 品目名からitem_idを検索する関数
+    function findItemIdByName(itemsData, itemName) {
+      for (var i = 0; i < itemsData.length; i++) {
+        if (itemsData[i].name === itemName) {
+          return itemsData[i].id; // 該当するitem_idを返す
+        }
+      }
+      return ''; // 該当する品目がなければ空文字を返す
+    }
+    // 品目データをPropertiesServiceから取得
+    var savedItemsData = JSON.parse(PropertiesService.getUserProperties().getProperty("itemsData"));
+    
+    var itemName = row[11]; // 品目名
+    var itemId = findItemIdByName(savedItemsData, itemName);
 
+    // 取引シートにitem_idを設定
+    if (itemId) {
+      targetSheet.getRange(i + 2, 9).setValue(itemId);
+    }
 
     // 金額(amount)
     targetSheet.getRange(i + 2, 12).setValue(sourceSheetValues[i][7]);
@@ -167,12 +177,12 @@ function dealsTranscription() {
       }
       return ''; // 該当する口座がなければ空文字を返す
     }
-  var savedWalletablesData = JSON.parse(PropertiesService.getUserProperties().getProperty("walletablesData"));
+    var savedWalletablesData = JSON.parse(PropertiesService.getUserProperties().getProperty("walletablesData"));
 
     // 口座名に基づいてfrom_walletable_idを検索
     var walletableName = row[15]; // 口座名
     var walletableId = findWalletableIdByName(savedWalletablesData, walletableName);
-      var walletableType = savedWalletablesData.find(walletable => walletable.from_walletable_id === walletableId)?.from_walletable_type;
+    var walletableType = savedWalletablesData.find(walletable => walletable.from_walletable_id === walletableId)?.from_walletable_type;
 
 
     // 取引シートにfrom_walletable_idとfrom_walletable_typeを設定
