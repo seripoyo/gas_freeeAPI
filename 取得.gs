@@ -41,7 +41,7 @@ function manage_Walletables() {
   // データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("walletablesData", JSON.stringify(processedWalletables));
-  Logger.log("保存した口座一覧: " + JSON.stringify(processedWalletables));
+  Logger.log("口座一覧を保存しました");
 
   return processedWalletables; // 結果の配列を返す
 }
@@ -75,7 +75,7 @@ function get_Taxes() {
   // 税区分データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("taxesData", JSON.stringify(taxesData));
-  Logger.log("保存した税区分: " + JSON.stringify(taxesData));
+  Logger.log("税区分を保存しました");
 
   return taxesData; // 結果の配列を返す
 }
@@ -120,7 +120,7 @@ function get_AccountItems() {
   userProperties.setProperty("matchingAccountItems", JSON.stringify(matchingAccountItems));
 
   // 確認のためにログに出力
-  Logger.log("保存した勘定科目: " + JSON.stringify(matchingAccountItems));
+  Logger.log("勘定科目を保存しました");
 
   return matchingAccountItems; // 結果の配列を返す
 }
