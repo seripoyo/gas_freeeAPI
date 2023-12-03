@@ -137,8 +137,7 @@ function saved_PartnersData() {
 
   if (partnersDataString) {
     var partnersData = JSON.parse(partnersDataString);
-    Logger.log("取得した取引先データ: ");
-    Logger.log(partnersData);
+    Logger.log("取引先データを取得しています ");
     return partnersData;
   } else {
     Logger.log("保存された取引先データはありません。");

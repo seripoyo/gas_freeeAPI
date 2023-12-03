@@ -124,16 +124,6 @@ function dealsTranscription() {
       targetSheet.getRange(i + 2, 8).setValue(taxCode);
     }
 
-    // var taxCodeName = sourceSheetValues[i][6];
-    // if (taxCodeName != "") {
-    //   for (var e = 0; e < taxesCodesLastRow; e++) {
-    //     if (taxesCodesValues[e][2] == taxCodeName) {
-    //       targetSheet.getRange(i + 2, 8).setValue(taxesCodesValues[e][0]);
-    //       break;
-    //     };
-    //   };
-    // };
-
     // 品目名からitem_idを検索する関数
     function findItemIdByName(itemsData, itemName) {
       for (var i = 0; i < itemsData.length; i++) {
@@ -145,7 +135,7 @@ function dealsTranscription() {
     }
     // 品目データをPropertiesServiceから取得
     var savedItemsData = JSON.parse(PropertiesService.getUserProperties().getProperty("itemsData"));
-    
+
     var itemName = row[11]; // 品目名
     var itemId = findItemIdByName(savedItemsData, itemName);
 
@@ -154,24 +144,20 @@ function dealsTranscription() {
       targetSheet.getRange(i + 2, 9).setValue(itemId);
     }
 
-    // 金額(amount)
+    // 金額-amount
     targetSheet.getRange(i + 2, 12).setValue(sourceSheetValues[i][7]);
 
-    // 税額(vat)
+    // 税額-vat
     targetSheet.getRange(i + 2, 13).setValue(sourceSheetValues[i][9]);
 
-    // 決済金額(amount)
+    // 決済金額-amount2
     targetSheet.getRange(i + 2, 18).setValue(sourceSheetValues[i][16]);
 
     var issueDate = formatDate(row[2]);
     targetSheet.getRange(i + 2, 2).setValue(issueDate);
 
-    // targetSheet.getRange(i + 2, 12).setValue(sourceSheetValues[i][7]);
 
-    //備考
-    // targetSheet.getRange(i + 2, 13).setValue(sourceSheetValues[i][10]);
-
-    //決済日
+    // 決済日-date
     // targetSheet.getRange(i + 2, 15).setValue(sourceSheetValues[i][14]);
     var settlementDate = formatDate(row[14]);
     targetSheet.getRange(i + 2, 15).setValue(settlementDate);
@@ -197,13 +183,21 @@ function dealsTranscription() {
 
     // 取引シートにfrom_walletable_idとfrom_walletable_typeを設定
     if (walletableId) {
-      targetSheet.getRange(i + 2, 17).setValue(walletableId);
-      targetSheet.getRange(i + 2, 16).setValue(walletableType);
+      targetSheet.getRange(i + 2, 17).setValue(walletableId); // 口座ID-from_walletable_id
+      targetSheet.getRange(i + 2, 16).setValue(walletableType); //口座種別-from_walletable_type
       // targetSheet.getRange(i + 2, 15).setValue
 
     }
 
   }
+
+  // スプレッドシートの特定の列を中央揃えに設定
+  var centerAlignedColumns = ['A','B','D', 'E', 'G', 'H', 'I', 'J', 'K', 'L', 'M','O','P', 'Q', 'R'];
+
+  centerAlignedColumns.forEach(function(column) {
+    var range = targetSheet.getRange(column + "2:" + column + targetSheet.getLastRow());
+    range.setHorizontalAlignment("center");
+  });
 }
 
 /******************************************************************
