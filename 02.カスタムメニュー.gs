@@ -21,29 +21,33 @@ function onOpen() {
 function menu() {
   var ui = SpreadsheetApp.getUi();
 
+/** freeeMenuを作成
+**************************************************************/
+  var freeeMenu = ui.createMenu('freee連携メニュー');
+  freeeMenu.addItem('①freeeと連携', 'alertAuth');
+  freeeMenu.addItem('②コールバックURLの表示', 'showCallbackUrl');
+  freeeMenu.addItem('③クライアントID＆シークレットの入力', 'inputClientInfo');
+  freeeMenu.addItem('④事業所を選択', 'GetMyCompaniesID');
+  freeeMenu.addItem('⑤請求書をインポート', 'copyDataFromMultipleSheets'); //請求書出力gs
+  freeeMenu.addItem('⑥売上データを送信', 'submit_freee');
+  // freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
+
+  freeeMenu.addToUi();
+
 /** gasMenuを作成
 **************************************************************/
-  var gasMenu = ui.createMenu('GAS操作メニュー');
+  var gasMenu = ui.createMenu('オプション操作');
   var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
-  Logger.log(folderUrl); // デバッグ情報
+  // Logger.log(folderUrl); // デバッグ情報
   if (folderUrl) {
     gasMenu.addItem('Googleドライブでフォルダを開く', 'openFolder');
   }
-  gasMenu.addItem('請求書をインポートする', 'copyDataFromMultipleSheets'); //請求書出力gs
-  gasMenu.addItem('取引一覧シートをリセットする', 'reset_Sheet');
+  // gasMenu.addItem('請求書をインポートする', 'copyDataFromMultipleSheets'); //請求書出力gs
+  gasMenu.addItem('取引一覧シートをリセット', 'reset_Sheet');
+  gasMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
   gasMenu.addToUi();
   
-/** freeeMenuを作成
-**************************************************************/
-  var freeeMenu = ui.createMenu('freee連携機能');
-  freeeMenu.addItem('①freeeと連携', 'alertAuth');
-  freeeMenu.addItem('コールバックURLはこちら', 'showCallbackUrl');
-  freeeMenu.addItem('クライアントID＆シークレットの入力', 'inputClientInfo');
-  freeeMenu.addItem('②事業所を選択', 'GetMyCompaniesID');
-  freeeMenu.addItem('売上データ送信', 'submit_freee');
-  freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
 
-  freeeMenu.addToUi();
 }
 
 
