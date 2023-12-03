@@ -65,7 +65,8 @@ function get_Taxes() {
   var taxesData = taxes.map(function (tax) {
     return {
       tax_code: parseInt(tax.code, 10).toString(), // IDを整数に変換して文字列化
-      name_ja: tax.name_ja
+      name_ja: tax.name_ja,
+      default_Tax_Ccode: 34,
     };
   });
 
@@ -105,7 +106,8 @@ function get_AccountItems() {
     if (matchingAccountItem) {
       matchingAccountItems.push({
         id: matchingAccountItem.id,
-        name: matchingAccountItem.name
+        name: matchingAccountItem.name,
+        defaultTaxId: matchingAccountItem.default_tax_id
       });
     }
   });
