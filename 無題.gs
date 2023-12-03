@@ -100,7 +100,7 @@ function manage_Walletables() {
   // データをユーザープロパティに保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("walletablesData", JSON.stringify(processedWalletables));
-  Logger.log("保存した口座一覧: " + JSON.stringify(processedWalletables));
+  // Logger.log("保存した口座一覧: " + JSON.stringify(processedWalletables));
 }
 
 

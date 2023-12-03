@@ -72,16 +72,48 @@ function dealsTranscription() {
     }
 
     //勘定科目
-    // var accountItemName = sourceSheetValues[i][5];
-    // for (var e = 0; e < accountItemsLastRow; e++) {
-    //   if (accountItemsValues[e][1] == accountItemName) {
-    //     targetSheet.getRange(i + 2, 7).setValue(accountItemsValues[e][0]);
-    //     targetSheet.getRange(i + 2, 8).setValue(accountItemsValues[e][5]);
-    //     break;
-    //   };
-    // };
+
+    // 勘定科目名からaccount_item_idを検索する関数
+    function findAccountIdByName(accountItemsData, accountItemName) {
+      for (var i = 0; i < accountItemsData.length; i++) {
+        if (accountItemsData[i].name === accountItemName) {
+          return accountItemsData[i].account_item_id; // 該当するaccount_item_idを返す
+        }
+      }
+      return ''; // 該当する勘定科目がなければ空文字を返す
+    }
+    var savedAccountItemsData = JSON.parse(PropertiesService.getUserProperties().getProperty("matchingAccountItems"));
+
+    // 勘定科目名に基づいてaccount_item_idを検索
+    var accountItemName = row[5]; // 勘定科目名
+    var accountId = findAccountIdByName(savedAccountItemsData, accountItemName);
+
+    // 取引シートにaccount_item_idを設定
+    if (accountId) {
+      targetSheet.getRange(i + 2, 7).setValue(accountId);
+    }
 
     //税計算区分
+    var savedTaxesData = JSON.parse(PropertiesService.getUserProperties().getProperty("taxesData"));
+    // 税区分名からtax_codeを検索する関数
+    function findTaxCodeByName(taxesData, taxName) {
+      for (var i = 0; i < taxesData.length; i++) {
+        if (taxesData[i].name_ja === taxName) {
+          return taxesData[i].tax_code; // 該当するtax_codeを返す
+        }
+      }
+      return ''; // 該当する税区分がなければ空文字を返す
+    }
+
+    // 税区分名に基づいてtax_codeを検索
+    var taxName = row[6]; // 税区分名
+    var taxCode = findTaxCodeByName(savedTaxesData, taxName);
+
+    // 取引シートにtax_codeを設定
+    if (taxCode) {
+      targetSheet.getRange(i + 2, 8).setValue(taxCode);
+    }
+
     // var taxCodeName = sourceSheetValues[i][6];
     // if (taxCodeName != "") {
     //   for (var e = 0; e < taxesCodesLastRow; e++) {
@@ -92,7 +124,7 @@ function dealsTranscription() {
     //   };
     // };
 
-    //品目
+    //品目  品目でaccount_item_id,
     // var itemName = sourceSheetValues[i][11];
     // for (var e = 0; e < itemsLastRow; e++) {
     //   if (itemsValues[e][2] == itemName) {
@@ -126,19 +158,32 @@ function dealsTranscription() {
 
 
     //from_walletable_type,from_walletable_id
-    // var walletableName = sourceSheetValues[i][15];
-    // for (var e = 0; e < walletablesLastRow; e++) {
-    //   if (walletable_values[e][1] == walletableName) {
-    //     targetSheet.getRange(i + 2, 15).setValue(walletable_values[e][3]);
-    //     targetSheet.getRange(i + 2, 16).setValue(walletable_values[e][0]);
-    //     break;
-    //   };
-    // };
 
-    //amount_payments
-    targetSheet.getRange(i + 2, 17).setValue(sourceSheetValues[i][16]);
+    function findWalletableIdByName(walletablesData, walletableName) {
+      for (var i = 0; i < walletablesData.length; i++) {
+        if (walletablesData[i].name === walletableName) {
+          return walletablesData[i].from_walletable_id; // 該当するfrom_walletable_idを返す
+        }
+      }
+      return ''; // 該当する口座がなければ空文字を返す
+    }
+  var savedWalletablesData = JSON.parse(PropertiesService.getUserProperties().getProperty("walletablesData"));
+
+    // 口座名に基づいてfrom_walletable_idを検索
+    var walletableName = row[15]; // 口座名
+    var walletableId = findWalletableIdByName(savedWalletablesData, walletableName);
+      var walletableType = savedWalletablesData.find(walletable => walletable.from_walletable_id === walletableId)?.from_walletable_type;
+
+
+    // 取引シートにfrom_walletable_idとfrom_walletable_typeを設定
+    if (walletableId) {
+      targetSheet.getRange(i + 2, 17).setValue(walletableId);
+      targetSheet.getRange(i + 2, 16).setValue(walletableType);
+      // targetSheet.getRange(i + 2, 15).setValue
+
+    }
+
   }
-
 }
 
 /******************************************************************
