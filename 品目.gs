@@ -32,7 +32,7 @@ function get_Items_Register() {
 
   var newlyRegisteredItems = []; // 新しく登録された品目を格納する配列
 
-  lColumnData.forEach(function(lValue) {
+  lColumnData.forEach(function (lValue) {
     var itemName = lValue[0].trim();
     if (itemName && !itemsMap.has(itemName)) {
       // 新しい品目を登録
@@ -45,6 +45,20 @@ function get_Items_Register() {
       }
     }
   });
+
+  // 新しい品目を含む品目一覧を更新
+  var updatedItems = items.concat(newlyRegisteredItems);
+
+  // 品目データを保存
+  var itemsData = updatedItems.map(function (item) {
+    return { account_item_id: item.id.toString(), name: item.name };
+  });
+
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("itemsData", JSON.stringify(itemsData));
+  Logger.log("品目データは保存されています");
+}
+
 /******************************************************************
 関数：register_Save_New_Item
 概要：品目の新規登録
@@ -74,7 +88,7 @@ function register_Save_New_Item(companyId, itemName, accessToken) {
     var updatedItems = JSON.parse(response).items;
 
     // 品目データを保存
-    var itemsData = updatedItems.map(function(item) {
+    var itemsData = updatedItems.map(function (item) {
       return { account_item_id: item.id.toString(), name: item.name };
     });
 
@@ -88,10 +102,7 @@ function register_Save_New_Item(companyId, itemName, accessToken) {
   }
 }
 
-  var userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty("itemsData", JSON.stringify(itemsData));
-  Logger.log("保存した品目データ: " + JSON.stringify(itemsData));
-}
+
 
 // 最終行を取得する関数
 function getLastRowInColumn(sheetName, columnNumber) {
