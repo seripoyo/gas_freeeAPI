@@ -64,7 +64,7 @@ function get_Taxes() {
   // 税区分一覧のIDを整数に変換して配列に格納
   var taxesData = taxes.map(function (tax) {
     return {
-      id: parseInt(tax.code, 10).toString(), // IDを整数に変換して文字列化
+      tax_code: parseInt(tax.code, 10).toString(), // IDを整数に変換して文字列化
       name_ja: tax.name_ja
     };
   });
