@@ -146,10 +146,125 @@ function submit_freee() {
 ******************************************************************/
 // カスタムダイアログを表示する関数
 function inputClientInfo() {
-  var html = HtmlService.createHtmlOutputFromFile('ClientInfoForm')
-    .setWidth(400)
-    .setHeight(200);
-  SpreadsheetApp.getUi().showModalDialog(html, 'freee API設定');
+  var htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <base target="_top">
+        <style>
+            body {
+                overflow: hidden;
+            }
+            .input-group {
+                position: relative;
+                margin: 2em 0 1em 0;
+            }
+
+            .input-group input {
+                padding: 0.8em;
+                width: 95%;
+                outline: none;
+                border: 2px solid #bcbcbc;
+                border-radius: 0.5rem;
+                background-color: transparent;
+                font-size: 100%;
+            }
+
+            .input-group label {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+                margin-left: 1em;
+                color: #bcbcbc;
+                pointer-events: none;
+                transition: all 0.3s ease;
+            }
+
+            .input-group :is(input:focus, input:valid)~label {
+                transform: translateY(-130%) scale(.8);
+                margin: 0em;
+                margin-left: 0.5em;
+                padding: 0.4em;
+                color: #37bcf8;
+                background-color: #fff;
+            }
+
+            .input-group :is(input:focus, input:valid) {
+                border-color: #37bcf8;
+            }
+
+            .btn {
+                display: flex; align-items: center; box-sizing: border-box; border-radius:3px; height: 45px; background-color: #eff3ff; border:1px solid #4349c5; text-align: center; text-decoration: none; margin-top:34px; max-width: 190px;
+            }
+
+            .btn-icon {
+                position: relative; background-color:#4349c5; width: 40px; height: 100%; color: white; transition: 0.3s;
+            }
+
+            .btn svg {
+                position: absolute; inset: 0; margin: auto; fill: #fff; transition: .5s all;
+            }
+
+            .btn span {
+                display: inline-block; width: 100px; color: #353535; text-align: center; padding-left:10px;  font-family: "Noto Sans JP";
+            }
+
+            .btn:hover {
+                border:2px solid #4349c5;
+            }
+
+            .btn:hover svg {
+                animation: iconAnime 1s linear;
+            }
+
+            .btn:hover span {
+                font-weight:bold;
+            }
+
+            @keyframes iconAnime {
+                25% { transform: scale(1.2); }
+                50% { transform: scale(1.1); }
+                75% { transform: scale(1.2); }
+            }
+        </style>
+    </head> 
+    <body>
+        <form id="clientInfoForm">
+            <div class="input-group">
+                <input id="clientId" type="text" name="clientId">
+                <label for="clientId">クライアントID:</label>
+            </div>
+            <div class="input-group">
+                <input id="clientSecret" type="text" name="clientSecret">
+                <label for="clientSecret">クライアントシークレット:</label>
+            </div>
+    </form>
+    <a href="#" class="btn" onclick="saveClientInfo()">
+    <div class="btn-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+        <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"></path> // SVGのpathをここに挿入
+      </svg>
+    </div>
+    <span>保存する</span>
+    </a>    
+
+        <script>
+            function saveClientInfo() {
+                var clientId = document.getElementById('clientId').value;
+                var clientSecret = document.getElementById('clientSecret').value;
+                google.script.run.saveClientInfo(clientId, clientSecret);
+                google.script.host.close();
+            }
+        </script>
+    </body>
+    </html>
+  `;
+
+  var html = HtmlService.createHtmlOutput(htmlContent)
+    .setWidth(600)
+    .setHeight(250);
+  SpreadsheetApp.getUi().showModalDialog(html, 'アプリページの情報をそのままコピペしてください！');
 }
 
 // プロパティにクライアント情報を保存する関数
@@ -167,22 +282,58 @@ function saveClientInfo(clientId, clientSecret) {
 function showCallbackUrl() {
   var scriptId = ScriptApp.getScriptId();
   var callbackUrl = 'https://script.google.com/macros/d/' + scriptId + '/usercallback';
-  var htmlContent = '<input id="url" value="' + callbackUrl + '" readonly style="width:100%">' +
-    '<button onclick="copyToClipboard()">コピーする</button>' +
+  var htmlContent = '<input id="url" value="' + callbackUrl + '" readonly style="width:100%; padding: 10px;">' +
+    '<a href="#" class="btn" onclick="copyToClipboard()">' +
+    '  <div class="btn-icon">' +
+    '    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">' +
+    '      <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"></path>' + // SVGのpathをここに挿入
+    '    </svg>' +
+    '  </div>' +
+    '  <span>コピーする</span>' +
+    '</a>' +
     '<script>' +
-    'function copyToClipboard() {' +
-    '  var copyText = document.getElementById("url");' +
-    '  copyText.select();' +
-    '  document.execCommand("copy");' +
-    '  alert("コピーしました: " + copyText.value);' +
-    '}' +
-    '</script>';
+    '  function copyToClipboard() {' +
+    '    var copyText = document.getElementById("url");' +
+    '    copyText.select();' +
+    '    document.execCommand("copy");' +
+    '    alert("コピーしました: " + copyText.value);' +
+    '  }' +
+    '</script>' +
+    '<style>' +
+    '  body {' +
+    '        overflow: hidden; ' +
+    '  }' +
+    '  .btn {' +
+    '    display: flex; align-items: center; box-sizing: border-box; border-radius: 0 3px 3px 0; height: 45px; background-color: #eff3ff; text-align: center; text-decoration: none; margin-top:34px; max-width: 190px; ' +
+    '  }' +
+    '  .btn-icon {' +
+    '    position: relative; border-radius: 3px 0 0 3px; background-color:#4349c5; width: 40px; height: 100%; color: white; transition: 0.3s;' +
+    '  }' +
+    '  .btn svg {' +
+    '    position: absolute; inset: 0; margin: auto; fill: #fff; transition: .5s all;' +
+    '  }' +
+    '  .btn span {' +
+    '    display: inline-block; width: 100px; color: #353535; text-align: center; padding-left:10px;  font-family: "Noto Sans JP"; ' +
+    '  }' +
+    '  .btn:hover svg {' +
+    '    animation: iconAnime 1s linear;' +
+    '  }' +
+    '  .btn:hover span {' +
+    '    font-weight:bold; ' +
+    '  }' +
+    '  @keyframes iconAnime {' +
+    '    25% { transform: scale(1.2); }' +
+    '    50% { transform: scale(1.1); }' +
+    '    75% { transform: scale(1.2); }' +
+    '  }' +
+    '</style>';
 
   var html = HtmlService.createHtmlOutput(htmlContent)
     .setWidth(400)
-    .setHeight(100);
-  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL'); 
+    .setHeight(150);
+  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL');
 }
+
 
 /******************************************************************
 関数：getService
