@@ -97,8 +97,8 @@ function get_AccountItems() {
   var accountItems = accountItemsResponse.account_items;
 
   // スプレッドシートのF列のデータを取得
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-  var lastRowInFColumn = getLastRowInColumn("売上履歴", 6);
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("取引一覧");
+  var lastRowInFColumn = getLastRowInColumn("取引一覧", 6);
   var fColumnData = sheet.getRange(2, 6, lastRowInFColumn - 1).getValues();
 
   // 合致する勘定科目のnameとidを保存する配列

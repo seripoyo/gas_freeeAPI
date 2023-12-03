@@ -31,7 +31,7 @@ function manage_Partners() {
     return;
   }
 
-  var salesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
+  var salesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("取引一覧");
   var salesData = salesSheet.getDataRange().getValues();
   var partnersMap = new Map(existingPartners.map(p => [p.name, p.id]));
 

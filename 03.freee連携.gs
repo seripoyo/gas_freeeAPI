@@ -120,7 +120,7 @@ function getSelectedCompanyId() {
 
 function onCompanySelected() {
   // 他のAPI呼び出し関数を実行
-  // manageWalletables(); //口座
+  manage_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
   manage_Partners();//取引先

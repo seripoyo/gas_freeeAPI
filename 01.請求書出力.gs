@@ -51,7 +51,7 @@ function createFolderAndUpdateMenu() {
   updateMenu();
 }
 
-// Googleドライブに存在するスプシを対象に売上履歴に出力
+// Googleドライブに存在するスプシを対象に取引一覧に出力
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 function getSpreadsheetIdsFromFolder(folderId) {
   // IDをログに出力して確認
@@ -94,12 +94,12 @@ function copyDataFromMultipleSheets() {
 
   var sourceSpreadsheetIds = getSpreadsheetIdsFromFolder(folderId);
 
-  // 「売上履歴」シートを対象として出力
+  // 「取引一覧」シートを対象として出力
   // ------------------------------------------------------------------------------------------
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var dstSheet = ss.getSheetByName("売上履歴");
+  var dstSheet = ss.getSheetByName("取引一覧");
   if (!dstSheet) {
-    throw new Error('"売上履歴"という名前のシートが見つかりません。');
+    throw new Error('"取引一覧"という名前のシートが見つかりません。');
   }
   // 2行目より開始
   // ------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ function copyDataFromMultipleSheets() {
         var initialRow = nextRow;
 
 
-        // 請求書フォーマットから売上履歴フォーマットへ値を入力
+        // 請求書フォーマットから取引一覧フォーマットへ値を入力
         dstSheet.getRange("A" + nextRow).setValue("収入"); //収支区分
 
         // 取引内容が確定した日（=発生日）を yyyy-mm-dd 形式で取得し設定

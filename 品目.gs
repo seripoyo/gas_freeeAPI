@@ -26,8 +26,8 @@ function get_Items_Register() {
   var itemsMap = new Map(items.map(item => [item.name.trim(), item.id]));
 
   // スプレッドシートからL列のデータを取得
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("売上履歴");
-  var lastRowInLColumn = getLastRowInColumn("売上履歴", 12);
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("取引一覧");
+  var lastRowInLColumn = getLastRowInColumn("取引一覧", 12);
   var lColumnData = sheet.getRange(2, 12, lastRowInLColumn - 1).getValues();
 
   var newlyRegisteredItems = []; // 新しく登録された品目を格納する配列

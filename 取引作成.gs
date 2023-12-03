@@ -15,7 +15,7 @@ summary       |入力された取引をPOST用の取引シートに転写する
 ******************************************************************/
 
 function dealsTranscription() {
-  var sourceSheetName = "売上履歴";
+  var sourceSheetName = "取引一覧";
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sourceSheet = ss.getSheetByName(sourceSheetName);
   var targetSheet = ss.getSheetByName("取引");
