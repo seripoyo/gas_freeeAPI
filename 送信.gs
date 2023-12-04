@@ -119,10 +119,11 @@ function postDeals() {
       var res = UrlFetchApp.fetch(requestUrl, options);
 
       if (res.getResponseCode() == 201) {
-        countPostedDeals++;
-      } else {
-        countErrorDeals++;
-      };
+   countPostedDeals++;
+  } else {
+    Logger.log("Error response: " + response.getContentText());
+    countErrorDeals++;
+  }
 
       countDealsRowSkip = 0;
       details.length = 0;
