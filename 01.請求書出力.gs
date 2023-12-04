@@ -1,5 +1,19 @@
-// Googleドライブにフォルダ作成
-// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/******************************************************************
+ * 
+ * Googleドライブにフォルダを作成＆中に指定したシートを複製
+ * フォルダ内のシートを取引一覧シートに出力するよ
+ * それ以外は保存してあるやつから情報を引っ張るよ！というやつ
+ * それぞれ全部引っ張ったら取引シートに入力出来るよ。
+ * 
+******************************************************************/
+
+
+
+/******************************************************************
+function name |createFolderAndUpdateMenu
+summary       |Googleドライブに新しくフォルダを作成
+******************************************************************/
+
 function createFolderAndUpdateMenu() {
   var ui = SpreadsheetApp.getUi();
 
@@ -46,11 +60,14 @@ function createFolderAndUpdateMenu() {
   } else {
     ui.alert('フォルダ作成がキャンセルされました。');
   }
-
+  // メニューを更新
+  menu();
 }
 
-// Googleドライブに存在するスプシを対象に取引一覧に出力
-// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+/******************************************************************
+function name |getSpreadsheetIdsFromFolder
+summary       |Googleドライブに存在する請求書を取引一覧シートに出力
+******************************************************************/
 function getSpreadsheetIdsFromFolder(folderId) {
   // IDをログに出力して確認
   Logger.log('Fetching spreadsheets from folder ID: ' + folderId);
@@ -78,8 +95,11 @@ function getSpreadsheetIdsFromFolder(folderId) {
   // スプシが重複した場合は削除
   return Array.from(new Set(spreadsheetIds));
 }
-// フォルダ作成が確認出来なかった場合の出力
-// ------------------------------------------------------------------------------------------
+
+/******************************************************************
+function name |copyDataFromMultipleSheets
+summary       |フォルダ作成が確認出来なかった場合の出力
+******************************************************************/
 
 function copyDataFromMultipleSheets() {
   var userProperties = PropertiesService.getUserProperties();
@@ -110,7 +130,7 @@ function copyDataFromMultipleSheets() {
     srcSheets.forEach(function (srcSheet) {
       var sheetName = srcSheet.getName();
       //  "テンプレ" と"インボイス対応テンプレ"ではないシートは処理しない
-      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ") {
+      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ" && sheetName !== "プロフィール") {
         Logger.log('Processing sheet: ' + sheetName);
         var initialRow = nextRow;
 
