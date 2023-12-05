@@ -10,11 +10,11 @@
 
 
 /******************************************************************
-function name |createFolderAndUpdateMenu
+function name |create_Folder_And_Update?Menu
 summary       |Googleドライブに新しくフォルダを作成
 ******************************************************************/
 
-function createFolderAndUpdateMenu() {
+function create_Folder_And_Update_Menu() {
   var ui = SpreadsheetApp.getUi();
 
   // フォルダが既に作成されているか確認

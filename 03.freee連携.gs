@@ -292,10 +292,6 @@ function authCallback(request) {
     // 認証成功時のHTML出力にJavaScriptを追加
     return HtmlService.createHtmlOutput(
       '<html><body>認証に成功しました。このウィンドウを閉じてください。' +
-      '<script>setTimeout(function() {' +
-      '  google.script.run.getMyCompaniesID();' +
-      '  window.close();' +
-      '}, 2000);</script>' + // 2秒後に関数を実行してウィンドウを閉じる
       '</body></html>');
   } else {
     return HtmlService.createHtmlOutput('認証に失敗しました。');
@@ -387,7 +383,7 @@ function getSelectedCompanyId() {
 function logSelectedCompanyId() {
   var companyId = getSelectedCompanyId(); // 修正されたcompanyIdを取得
   if (companyId !== null) {
-    Logger.log("洗濯された事業所ID: " + companyId); // コンソールに出力
+    Logger.log("選択された事業所ID: " + companyId); // コンソールに出力
   } else {
     Logger.log("事業所IDが選択されていません"); // companyIdが取得できなかった場合
   }

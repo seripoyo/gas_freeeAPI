@@ -37,7 +37,7 @@ function menu() {
   **************************************************************/
   var gasMenu = ui.createMenu('共通メニュー');
   gasMenu.addItem('最初の認証', 'alertAuth_First')
-  gasMenu.addItem('フォルダ＆サンプル作成', 'createFolderAndUpdateMenu')
+  gasMenu.addItem('フォルダ＆サンプル作成', 'create_Folder_And_Update?Menu')
   gasMenu.addItem('⑥請求書をインポート', 'invoice_import')
 
   var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
