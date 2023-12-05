@@ -13,7 +13,7 @@
 関数：alertAuth
 概要：inputClientInfo()実行後に認証URL（認証のエンドポイント）を出力
 ******************************************************************/
-function alertAuth() {
+function alertAuth_irst() {
   var service = getService();
   var authorizationUrl = service.getAuthorizationUrl();
 
@@ -30,12 +30,36 @@ function alertAuth() {
   var ui = SpreadsheetApp.getUi();
   ui.showModalDialog(html, 'リンクを開いて認証を行ってください');
 }
+function alertAuth() {
+  var service = getService();
+  var authorizationUrl = service.getAuthorizationUrl();
+
+  var html = HtmlService.createHtmlOutput('<html><body>' +
+    '<a href="' + authorizationUrl + '" target="_blank" onclick="handleAuthClick();">認証ページを開く</a>' +
+'<script>' +
+'  function copyToClipboard() {' +
+'    var copyText = document.getElementById("url");' +
+'    copyText.select();' +
+'    document.execCommand("copy");' +
+'    alert("コピーしました: " + copyText.value);' +
+'    google.script.run.openLink();' + // ここで openLink を実行
+'    google.script.host.close();' + // ダイアログを閉じる
+'  }' +
+'</script>' +
+    '</body></html>')
+    .setWidth(500)
+    .setHeight(60);
+  var ui = SpreadsheetApp.getUi();
+  ui.showModalDialog(html, 'リンクを開いて認証を行ってください');
+}
 
 // 認証後に事業所一覧を取得する関数
-function getMyCompaniesIDAfterAuth() {
-  // 少し遅延を入れる（必要に応じて）
-  Utilities.sleep(1000);
-  getMyCompaniesID();
+function openLink() {
+  var url = 'https://app.secure.freee.co.jp/developers/companies';
+  var html = HtmlService.createHtmlOutput('<html><script>window.open("' + url + '");</script></html>')
+    .setWidth(400)
+    .setHeight(30);
+  SpreadsheetApp.getUi().showModelessDialog(html, '連携アプリ作成画面を開いています');
 }
 
 /******************************************************************
@@ -282,8 +306,8 @@ function saveClientInfo(clientId, clientSecret) {
 }
 
 /******************************************************************
-関数：showCallbackUrl
-概要：認証用コールバックURLのコピペできるように出力
+show_CallbackUrl_and_Applink
+概要：認証用コールバックURLのコピペ→アプリ作成画面URLを自動で開く
 ******************************************************************/
 
 function show_CallbackUrl_and_Applink() {
@@ -298,14 +322,16 @@ function show_CallbackUrl_and_Applink() {
     '  </div>' +
     '  <span>コピーする</span>' +
     '</a>' +
-    '<script>' +
-    '  function copyToClipboard() {' +
-    '    var copyText = document.getElementById("url");' +
-    '    copyText.select();' +
-    '    document.execCommand("copy");' +
-    '    alert("コピーしました: " + copyText.value);' +
-    '  }' +
-    '</script>' +
+'<script>' +
+'  function copyToClipboard() {' +
+'    var copyText = document.getElementById("url");' +
+'    copyText.select();' +
+'    document.execCommand("copy");' +
+'    alert("コピーしました: " + copyText.value);' +
+'    google.script.run.openLink();' + // ここで openLink を実行
+'    google.script.host.close();' + // ダイアログを閉じる
+'  }' +
+'</script>' +
     '<style>' +
     '  body {' +
     '        overflow: hidden; ' +
@@ -335,14 +361,19 @@ function show_CallbackUrl_and_Applink() {
     '  }' +
     '</style>';
 
+
   var html = HtmlService.createHtmlOutput(htmlContent)
     .setWidth(400)
     .setHeight(150);
-  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL');
-
-  // リンクを開く関数
-  openLink()
-
+  SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURLをコピーしてください');
+}
+// リンクを開く関数
+function openLink() {
+  var url = 'https://app.secure.freee.co.jp/developers/companies';
+  var html = HtmlService.createHtmlOutput('<html><script>window.open("' + url + '");google.script.host.close();</script></html>')
+    .setWidth(400)
+    .setHeight(30);
+  SpreadsheetApp.getUi().showModalDialog(html, '連携アプリ作成画面を開いています');
 }
 
 
