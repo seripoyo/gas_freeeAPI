@@ -98,7 +98,7 @@ function getSpreadsheetIdsFromFolder(folderId) {
 
 /******************************************************************
 function name |copyDataFromMultipleSheets
-summary       |フォルダ作成が確認出来なかった場合の出力
+summary       |「取引一覧」シートを対象として出力
 ******************************************************************/
 
 function copyDataFromMultipleSheets() {
@@ -112,7 +112,7 @@ function copyDataFromMultipleSheets() {
 
   var sourceSpreadsheetIds = getSpreadsheetIdsFromFolder(folderId);
 
-  // 「取引一覧」シートを対象として出力
+  // フォルダ作成が確認出来なかった場合の出力
   // ------------------------------------------------------------------------------------------
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var dstSheet = ss.getSheetByName("取引一覧");

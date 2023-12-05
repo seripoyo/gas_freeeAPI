@@ -146,7 +146,7 @@ function dealsTranscription() {
     targetSheet.getRange(i + 2, 13).setValue(sourceSheetValues[i][9]);
 
     // 決済金額-amount2
-    targetSheet.getRange(i + 2, 18).setValue(sourceSheetValues[i][16]);
+    targetSheet.getRange(i + 2, 17).setValue(sourceSheetValues[i][16]);
 
     var issueDate = formatDate(row[2]);
     targetSheet.getRange(i + 2, 2).setValue(issueDate);
@@ -155,7 +155,7 @@ function dealsTranscription() {
     // 決済日-date
     // targetSheet.getRange(i + 2, 15).setValue(sourceSheetValues[i][14]);
     var settlementDate = formatDate(row[14]);
-    targetSheet.getRange(i + 2, 15).setValue(settlementDate);
+    targetSheet.getRange(i + 2, 14).setValue(settlementDate);
 
 
     //from_walletable_type,from_walletable_id
@@ -178,8 +178,8 @@ function dealsTranscription() {
 
     // 取引シートにfrom_walletable_idとfrom_walletable_typeを設定
     if (walletableId) {
-      targetSheet.getRange(i + 2, 17).setValue(walletableId); // 口座ID-from_walletable_id
-      targetSheet.getRange(i + 2, 16).setValue(walletableType); //口座種別-from_walletable_type
+      targetSheet.getRange(i + 2, 16).setValue(walletableId); // 口座ID-from_walletable_id
+      targetSheet.getRange(i + 2, 15).setValue(walletableType); //口座種別-from_walletable_type
       // targetSheet.getRange(i + 2, 15).setValue
 
     }
