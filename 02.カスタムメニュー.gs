@@ -25,7 +25,7 @@ function menu() {
 **************************************************************/
   var freeeMenu = ui.createMenu('freee連携メニュー');
   freeeMenu .addItem('①free連携用アプリを作成', 'openLink')
-  freeeMenu.addItem('③コールバックURLの表示', 'showCallbackUrl');
+  freeeMenu.addItem('③コールバックURLの表示', 'show_CallbackUrl_and_Applink');
   freeeMenu.addItem('④クライアントID＆シークレットの入力', 'inputClientInfo');
   freeeMenu.addItem('②アプリ連携&事業所選択', 'auth_Setting');
   freeeMenu.addItem('⑥請求書をインポート', 'invoice_import'); //請求書出力gs

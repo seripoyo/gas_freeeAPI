@@ -27,8 +27,8 @@ function alertAuth() {
     '</body></html>')
     .setWidth(500)
     .setHeight(60);
-      var ui = SpreadsheetApp.getUi();
-    ui.showModalDialog(html, 'リンクを開いて認証を行ってください');
+  var ui = SpreadsheetApp.getUi();
+  ui.showModalDialog(html, 'リンクを開いて認証を行ってください');
 }
 
 // 認証後に事業所一覧を取得する関数
@@ -286,7 +286,7 @@ function saveClientInfo(clientId, clientSecret) {
 概要：認証用コールバックURLのコピペできるように出力
 ******************************************************************/
 
-function showCallbackUrl() {
+function show_CallbackUrl_and_Applink() {
   var scriptId = ScriptApp.getScriptId();
   var callbackUrl = 'https://script.google.com/macros/d/' + scriptId + '/usercallback';
   var htmlContent = '<input id="url" value="' + callbackUrl + '" readonly style="width:100%; padding: 10px;">' +
@@ -339,6 +339,10 @@ function showCallbackUrl() {
     .setWidth(400)
     .setHeight(150);
   SpreadsheetApp.getUi().showModalDialog(html, 'コールバックURL');
+
+  // リンクを開く関数
+  openLink()
+
 }
 
 
