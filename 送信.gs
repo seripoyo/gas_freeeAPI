@@ -1,3 +1,4 @@
+
 /******************************************************************
 function name |postDeals
 summary       |取引の送信
@@ -8,8 +9,7 @@ function postDeals() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
   var requestUrl = "https://api.freee.co.jp/api/1/deals";
-
-   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var headers = { "Authorization": "Bearer " + accessToken };
   var dealsSheet = ss.getSheetByName("取引");
   var dealsColumnLastRow = getLastRowNumber(2, "取引");
@@ -80,8 +80,7 @@ function postDeals() {
       countDealsRowSkip++;
 
     } else {
-      var companyId = getSelectedCompanyId();
-
+      var companyId = parseInt(dealsValues[i - countDealsRowSkip][0]);
 
       if (dealsValues[i - countDealsRowSkip][1] != "") {
         var issueDate = Utilities.formatDate(dealsValues[i - countDealsRowSkip][1], "JST", "yyyy-MM-dd");
@@ -107,6 +106,8 @@ function postDeals() {
         "payments": payments
       };
 
+      Logger.log(JSON.stringify(requestBody));
+
       // POSTオプション
       var options = {
         "method": "POST",
@@ -116,23 +117,26 @@ function postDeals() {
         muteHttpExceptions: true
       };
 
+      // POSTリクエスト
       var res = UrlFetchApp.fetch(requestUrl, options);
 
       if (res.getResponseCode() == 201) {
-   countPostedDeals++;
-  } else {
-    Logger.log("Error response: " + response.getContentText());
-    countErrorDeals++;
-  }
+        countPostedDeals++;
+      } else {
+        Logger.log("Error response: " + res.getContentText());
+        countErrorDeals++;
+      }
 
       countDealsRowSkip = 0;
       details.length = 0;
       payments.length = 0;
     };
   };
-  SpreadsheetApp.getUi().alert(countPostedDeals + "件の取引を送信しました");
+  // 結果のアラート表示
+  var ui = SpreadsheetApp.getUi();
   if (countErrorDeals != 0) {
-    SpreadsheetApp.getUi().alert(countErrorDeals + "件の取引の送信に失敗しました");
-  };
-
+    ui.alert(countErrorDeals + "件の取引の送信に失敗しました");
+  } else {
+    ui.alert(countPostedDeals + "件の取引を送信しました");
+  }
 }

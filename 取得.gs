@@ -99,7 +99,13 @@ function get_AccountItems() {
   // スプレッドシートのF列のデータを取得
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("取引一覧");
   var lastRowInFColumn = getLastRowInColumn("取引一覧", 6);
-  var fColumnData = sheet.getRange(2, 6, lastRowInFColumn - 1).getValues();
+
+  // lastRowInFColumnが1未満の場合は処理をスキップ
+  if (lastRowInFColumn < 1) {
+    Logger.log("F列にデータがありません。");
+    return;
+  }
+  var fColumnData = sheet.getRange(2, 6, lastRowInFColumn).getValues();
 
   // 合致する勘定科目のnameとidを保存する配列
   var matchingAccountItems = [];

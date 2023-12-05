@@ -138,17 +138,9 @@ function copyDataFromMultipleSheets() {
         dstSheet.getRange("A" + nextRow).setValue("収入"); //収支区分
 
         // 取引内容が確定した日（=発生日）を yyyy-mm-dd 形式で取得し設定
-        var issueDateN4 = formatDate(srcSheet.getRange("N4").getValue());
-        var issueDateL4 = formatDate(srcSheet.getRange("L4").getValue());
+        var issueDate = formatDate(srcSheet.getRange("N4").getValue());
 
-        // N4 または L4 から有効な日付を取得
-        var issueDate = issueDateN4 || issueDateL4;
-
-        if (issueDate) {
-          dstSheet.getRange("C" + nextRow).setValue(issueDate);
-        } else {
-          Logger.log("有効な日付が見つかりません: " + sheetName);
-        }
+        dstSheet.getRange("C" + nextRow).setValue(issueDate);
 
         var T14Value = srcSheet.getRange("T14").getValue();
         var M15Value = srcSheet.getRange("M15").getValue();
