@@ -4,7 +4,6 @@
  * カスタムメニューfreeeMenuの内容となる関数を作成
  * freeeMenuに追加される項目はfreee_menu.gsに記載
 
-
 ******************************************************** */
 
 /******************************************************************
@@ -217,11 +216,11 @@ function input_ClientInfo() {
         <form id="clientInfoForm">
             <div class="input-group">
                 <input id="clientId" type="text" name="clientId">
-                <label for="clientId">クライアントID:</label>
+                <label for="clientId">Client ID:</label>
             </div>
             <div class="input-group">
                 <input id="clientSecret" type="text" name="clientSecret">
-                <label for="clientSecret">クライアントシークレット:</label>
+                <label for="clientSecret">Client Secret:</label>
             </div>
     </form>
     <a href="#" class="btn" onclick="save_ClientInfo()">
