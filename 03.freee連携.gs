@@ -18,18 +18,31 @@ function alertAuth() {
   var authorizationUrl = service.getAuthorizationUrl();
 
   var html = HtmlService.createHtmlOutput('<html><body>' +
-    '<a href="' + authorizationUrl + '" target="_blank" onclick="google.script.host.close();">認証ページを開く</a>' +
+    '<a href="' + authorizationUrl + '" target="_blank" onclick="handleAuthClick();">認証ページを開く</a>' +
+    '<script>' +
+    'function handleAuthClick() {' +
+    '  google.script.run.withSuccessHandler(google.script.host.close).getMyCompaniesIDAfterAuth();' +
+    '}' +
+    '</script>' +
     '</body></html>')
-    .setWidth(400)
+    .setWidth(500)
     .setHeight(60);
-  SpreadsheetApp.getUi().showModalDialog(html, 'リンクを開いて認証を行ってください');
+      var ui = SpreadsheetApp.getUi();
+    ui.showModalDialog(html, 'リンクを開いて認証を行ってください');
+}
+
+// 認証後に事業所一覧を取得する関数
+function getMyCompaniesIDAfterAuth() {
+  // 少し遅延を入れる（必要に応じて）
+  Utilities.sleep(1000);
+  getMyCompaniesID();
 }
 
 /******************************************************************
-関数：GetMyCompaniesID
+関数：getMyCompaniesID
 概要：事業所の一覧をFreee APIから取得し、選択可能なポップアップとして表示する関数
 ******************************************************************/
-function GetMyCompaniesID() {
+function getMyCompaniesID() {
   try {
     var accessToken = getService().getAccessToken();
     var requestUrl = "https://api.freee.co.jp/api/1/companies";
@@ -58,41 +71,30 @@ function GetMyCompaniesID() {
 関数：SelectModal
 概要：業所一覧を取得し、このスプシで取引を送信する事業所を選択させるポップアップを出力
 ---------------------------------------------------------------------------------------- **/
-
 function SelectModal(companies) {
-  var html = '<style>' +
-
-    /** 特定性を高めるためにIDセレクタを使用*************************************************/
-    '#companyList li:before { position: absolute; content: ""; right: 0px; bottom: 0px; border-width: 0px 0px 15px 15px; border-style: solid; border-color: white white white #124fbd;}' +
-    '#companyList li:hover, #companyList li.selected { border-left:10px solid #E91E63 !important; background-color: #fbeff7 !important; font-weight:bold; }' +
-    '#companyList li:hover:before { border-color: white white white #E91E63 !important;}' +
-    '.title { font-size: 18px; color: #333; padding: 10px; font-family: "Noto Sans JP"; }' +
+  var htmlContent = '<style>' +
+    // スタイル定義
     '</style>';
 
-  /** 事業所一覧を<li>要素としてループで出力**/
-  html += '<ul id="companyList" style="list-style-type: none; padding: 0;">'; /** IDを追加 **/
+  htmlContent += '<ul id="companyList">';
   companies.forEach(function (company, index) {
-    html += '<li id="company_' + index + '" style="position:relative;cursor: pointer; margin-bottom: 1rem; padding: 0.7rem; border-left: 10px solid #4349c5; border-radius: 3px; background-color: #eff3ff; color: #333; line-height: 1.5; font-family: \'Noto Sans JP\', sans-serif;" ' +
-      'onclick="selectCompany(' + company.id + ', ' + index + ')">' + company.name + '</li>';
+    htmlContent += '<li id="company_' + index + '" onclick="selectCompany(' + company.id + ')">' + company.name + '</li>';
   });
-  html += '</ul>';
+  htmlContent += '</ul>';
 
-  html +=
+  htmlContent +=
     '<script>' +
-    'function selectCompany(companyId, index) { ' +
-    'var allLis = document.querySelectorAll("#companyList li");' +
-    'allLis.forEach(function(li) { li.classList.remove("selected"); });' +
-    'document.getElementById("company_" + index).classList.add("selected");' +
-    'google.script.run.withSuccessHandler(function() { ' +
-    'google.script.host.close(); }).setSelectedCompanyId(companyId); ' +
+    'function selectCompany(companyId) { ' +
+    '  google.script.run.withSuccessHandler(closeDialog).setSelectedCompanyId(companyId); ' +
+    '}' +
+    'function closeDialog() { ' +
+    '  google.script.host.close(); ' +
     '}' +
     '</script>';
 
-
-  var ui = HtmlService.createHtmlOutput(html).setWidth(500).setHeight(200);
+  var ui = HtmlService.createHtmlOutput(htmlContent).setWidth(500).setHeight(200);
   SpreadsheetApp.getUi().showModalDialog(ui, "事業所を選択してください！");
 }
-// 
 
 /******************************************************************
 関数：setSelectedCompanyId
@@ -101,31 +103,30 @@ function SelectModal(companies) {
 function setSelectedCompanyId(companyId) {
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("selectedCompanyId", companyId);
-
-  // 
-  /** 事業所選択が完了したら他の関数を実行
-  ********************************************************/
-  onCompanySelected();
 }
+
 function getSelectedCompanyId() {
   var userProperties = PropertiesService.getUserProperties();
   var companyId = userProperties.getProperty("selectedCompanyId");
-  return companyId ? parseInt(companyId, 10) : null; // 数値として返す
+
+  if (companyId) {
+    var fixedCompanyId = parseFloat(companyId).toFixed(0);
+    return parseInt(fixedCompanyId, 10);
+  }
+
+
+  return null; // companyIdがnullまたはundefinedの場合
+
+}
+function logSelectedCompanyId() {
+  var companyId = getSelectedCompanyId(); // 修正されたcompanyIdを取得
+  if (companyId !== null) {
+    Logger.log("Selected Company ID: " + companyId); // コンソールに出力
+  } else {
+    Logger.log("No Company ID selected."); // companyIdが取得できなかった場合
+  }
 }
 
-/******************************************************************
-関数：onCompanySelected
-概要：SelectModal事業所がで選択され、そのIDを取得したら連動して実行
-******************************************************************/
-
-function onCompanySelected() {
-  // 他のAPI呼び出し関数を実行
-  manage_Walletables(); //口座
-  get_Taxes(); //税区分
-  get_AccountItems();//勘定科目
-  manage_Partners();//取引先
-  get_Items_Register();//品目
-}
 
 /******************************************************************
 関数：submit_freee
@@ -267,11 +268,17 @@ function inputClientInfo() {
   SpreadsheetApp.getUi().showModalDialog(html, 'アプリページの情報をそのままコピペしてください！');
 }
 
-// プロパティにクライアント情報を保存する関数
+
+/******************************************************************
+関数：saveClientInfo
+概要：プロパティにクライアント情報を保存する関数
+******************************************************************/
 function saveClientInfo(clientId, clientSecret) {
   PropertiesService.getUserProperties()
     .setProperty('freeeClientId', clientId)
     .setProperty('freeeClientSecret', clientSecret);
+  // クライアント情報の保存後に認証を行う
+  alertAuth();
 }
 
 /******************************************************************

@@ -25,11 +25,10 @@ function menu() {
 **************************************************************/
   var freeeMenu = ui.createMenu('freee連携メニュー');
   freeeMenu .addItem('①free連携用アプリを作成', 'openLink')
-  freeeMenu.addItem('②freeeと連携', 'alertAuth');
   freeeMenu.addItem('③コールバックURLの表示', 'showCallbackUrl');
   freeeMenu.addItem('④クライアントID＆シークレットの入力', 'inputClientInfo');
-  freeeMenu.addItem('⑤事業所を選択', 'GetMyCompaniesID');
-  freeeMenu.addItem('⑥請求書をインポート', 'copyDataFromMultipleSheets'); //請求書出力gs
+  freeeMenu.addItem('②アプリ連携&事業所選択', 'auth_Setting');
+  freeeMenu.addItem('⑥請求書をインポート', 'invoice_import'); //請求書出力gs
   freeeMenu.addItem('⑦売上データを送信', 'submit_freee');
   // freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
 
@@ -57,6 +56,25 @@ function openLink() {
     .setWidth(400)
     .setHeight(30);
   SpreadsheetApp.getUi().showModalDialog(html, '連携アプリ作成画面を開いています');
+}
+
+/******************************************************************
+追加されるメニュー：gasMenu
+関数：openFolder
+概要：Googleドライブに作成したフォルダのページを開く
+******************************************************************/
+
+
+
+function invoice_import() {
+  copyDataFromMultipleSheets(); //請求書インポート
+  // 少し遅延を入れる（必要に応じて）
+  Utilities.sleep(3000);
+  manage_Walletables(); //口座
+  get_Taxes(); //税区分
+  get_AccountItems();//勘定科目
+  manage_Partners();//取引先
+  get_Items_Register();//品目
 }
 
 
