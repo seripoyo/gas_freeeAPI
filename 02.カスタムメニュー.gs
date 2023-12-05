@@ -26,8 +26,8 @@ function menu() {
   var freeeMenu = ui.createMenu('freee連携メニュー');
   freeeMenu.addItem('①free連携用アプリを作成', 'openLink')
   freeeMenu.addItem('③コールバックURLの表示', 'show_CallbackUrl_and_Applink');
-  //inputClientInfo()で情報保存→alertAuthが実行→ウィンドウを閉じる際に自動でgetMyCompaniesIDが実行され事業所IDが保存される
-  freeeMenu.addItem('④クライアントID＆シークレットの入力', 'inputClientInfo'); 
+  //input_ClientInfo()で情報保存→alertAuthが実行→ウィンドウを閉じる際に自動でgetMyCompaniesIDが実行され事業所IDが保存される
+  freeeMenu.addItem('④クライアントID＆シークレットの入力', 'input_ClientInfo'); 
   freeeMenu.addItem('⑦売上データを送信', 'submit_freee');
   // freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
 
