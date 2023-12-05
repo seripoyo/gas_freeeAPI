@@ -26,9 +26,8 @@ function menu() {
   var freeeMenu = ui.createMenu('freee連携メニュー');
   freeeMenu.addItem('①free連携用アプリを作成', 'openLink')
   freeeMenu.addItem('③コールバックURLの表示', 'show_CallbackUrl_and_Applink');
-  freeeMenu.addItem('④クライアントID＆シークレットの入力', 'inputClientInfo');
-  freeeMenu.addItem('②アプリ連携&事業所選択', 'auth_Setting');
-  freeeMenu.addItem('⑥請求書をインポート', 'invoice_import'); //請求書出力gs
+  //inputClientInfo()で情報保存→alertAuthが実行→ウィンドウを閉じる際に自動でgetMyCompaniesIDが実行され事業所IDが保存される
+  freeeMenu.addItem('④クライアントID＆シークレットの入力', 'inputClientInfo'); 
   freeeMenu.addItem('⑦売上データを送信', 'submit_freee');
   // freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
 
@@ -64,7 +63,7 @@ function menu() {
 function invoice_import() {
   copyDataFromMultipleSheets(); //請求書インポート
   // 少し遅延を入れる（必要に応じて）
-  Utilities.sleep(3000);
+  // Utilities.sleep(3000);
   manage_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
