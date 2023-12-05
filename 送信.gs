@@ -133,10 +133,8 @@ function postDeals() {
     };
   };
   // 結果のアラート表示
-  var ui = SpreadsheetApp.getUi();
-  if (countErrorDeals != 0) {
-    ui.alert(countErrorDeals + "件の取引の送信に失敗しました");
-  } else {
-    ui.alert(countPostedDeals + "件の取引を送信しました");
-  }
+  SpreadsheetApp.getUi().alert( countPostedDeals + "件の取引を送信しました" );
+  if ( countErrorDeals != 0 ) {
+    SpreadsheetApp.getUi().alert( countErrorDeals + "件の取引の送信に失敗しました" );
+  };
 }

@@ -412,7 +412,12 @@ function showAlertWithAccessToken() {
 ******************************************************************/
 
 function submit_freee() {
-
+  getMyCompaniesID();
+  manage_Walletables(); //口座
+  get_Taxes(); //税区分
+  get_AccountItems();//勘定科目
+  manage_Partners();//取引先
+  get_Items_Register();//品目
   dealsTranscription(); //取引データを作成して
   postDeals(); //送信！
 

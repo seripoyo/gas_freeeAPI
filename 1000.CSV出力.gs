@@ -1,7 +1,7 @@
 /**
  * スプレッドシートの内容をCSVファイルへ出力
  */
-function outputCsvFile() {
+function output_csv_File() {
   // 出力するフォルダのIDをプロパティより取得
   var userProperties = PropertiesService.getUserProperties();
   var folderId = userProperties.getProperty('recentFolderId');

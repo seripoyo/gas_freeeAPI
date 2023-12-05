@@ -24,29 +24,25 @@ function menu() {
   /** freeeMenuを作成
   **************************************************************/
   var freeeMenu = ui.createMenu('freee連携メニュー');
-  freeeMenu.addItem('①free連携用アプリを作成', 'openLink')
-  freeeMenu.addItem('③コールバックURLの表示', 'show_CallbackUrl_and_Applink');
-  //input_ClientInfo()で情報保存→alertAuthが実行→ウィンドウを閉じる際に自動でgetMyCompaniesIDが実行され事業所IDが保存される
-  freeeMenu.addItem('④クライアントID＆シークレットの入力', 'input_ClientInfo'); 
-  freeeMenu.addItem('⑦売上データを送信', 'submit_freee');
-  // freeeMenu.addItem('アクセストークン', 'showAlertWithAccessToken');
-
+  freeeMenu.addItem('freeeと連携する', 'show_CallbackUrl_and_Applink');
+  freeeMenu.addItem('売上データを送信する', 'submit_freee');
+  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
   freeeMenu.addToUi();
 
   /** gasMenuを作成
   **************************************************************/
   var gasMenu = ui.createMenu('共通メニュー');
-  gasMenu.addItem('最初の認証', 'alertAuth_First')
-  gasMenu.addItem('フォルダ＆サンプル作成', 'create_Folder_And_Update?Menu')
-  gasMenu.addItem('⑥請求書をインポート', 'invoice_import')
+  gasMenu.addItem('最初の認証を行う', 'alertAuth_First')
+  gasMenu.addItem('専用フォルダ＆サンプルを作る', 'create_Folder_And_Update_Menu')
+  gasMenu.addItem('請求書を読み込む', 'copy_Data_From_MultipleSheets')
+  gasMenu.addItem('CSVで出力する', 'output_csv_File')
 
   var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
   if (folderUrl) {
     gasMenu.addItem('Googleドライブでフォルダを開く', 'openFolder');
   }
+  gasMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
 
-  gasMenu.addItem('取引一覧シートをリセット', 'reset_Sheet');
-  gasMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
   gasMenu.addToUi();
 
 
@@ -64,11 +60,7 @@ function invoice_import() {
   copy_Data_From_MultipleSheets(); //請求書インポート
   // 少し遅延を入れる（必要に応じて）
   // Utilities.sleep(3000);
-  manage_Walletables(); //口座
-  get_Taxes(); //税区分
-  get_AccountItems();//勘定科目
-  manage_Partners();//取引先
-  get_Items_Register();//品目
+
 }
 
 
