@@ -10,7 +10,7 @@
 
 
 /******************************************************************
-function name |create_Folder_And_Update?Menu
+function name |create_Folder_And_Update_Menu
 summary       |Googleドライブに新しくフォルダを作成
 ******************************************************************/
 
@@ -65,10 +65,10 @@ function create_Folder_And_Update_Menu() {
 }
 
 /******************************************************************
-function name |getSpreadsheetIdsFromFolder
+function name |get_SpreadsheetIds_From_Folder
 summary       |Googleドライブに存在する請求書を取引一覧シートに出力
 ******************************************************************/
-function getSpreadsheetIdsFromFolder(folderId) {
+function get_SpreadsheetIds_From_Folder(folderId) {
   // IDをログに出力して確認
   Logger.log('Fetching spreadsheets from folder ID: ' + folderId);
 
@@ -110,7 +110,7 @@ function copyDataFromMultipleSheets() {
 
   }
 
-  var sourceSpreadsheetIds = getSpreadsheetIdsFromFolder(folderId);
+  var sourceSpreadsheetIds = get_SpreadsheetIds_From_Folder(folderId);
 
   // フォルダ作成が確認出来なかった場合の出力
   // ------------------------------------------------------------------------------------------
