@@ -61,7 +61,7 @@ function menu() {
 
 
 function invoice_import() {
-  copyDataFromMultipleSheets(); //請求書インポート
+  copy_Data_From_MultipleSheets(); //請求書インポート
   // 少し遅延を入れる（必要に応じて）
   // Utilities.sleep(3000);
   manage_Walletables(); //口座

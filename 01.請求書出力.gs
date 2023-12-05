@@ -97,11 +97,11 @@ function get_SpreadsheetIds_From_Folder(folderId) {
 }
 
 /******************************************************************
-function name |copyDataFromMultipleSheets
+function name |copy_Data_From_MultipleSheets
 summary       |「取引一覧」シートを対象として出力
 ******************************************************************/
 
-function copyDataFromMultipleSheets() {
+function copy_Data_From_MultipleSheets() {
   var userProperties = PropertiesService.getUserProperties();
   var folderId = userProperties.getProperty('recentFolderId');
   Logger.log(folderId);
