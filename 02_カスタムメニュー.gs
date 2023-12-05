@@ -98,3 +98,35 @@ function reset_Sheet() {
     }
   }
 }
+
+/******************************************************************
+関数：showAlertWithAccessToken
+概要：メニュー選択時にアクセストークンをアラートで出力
+******************************************************************/
+
+function showAlertWithAccessToken() {
+  var service = getService();
+  if (service.hasAccess()) {
+    var accessToken = service.getAccessToken();
+    SpreadsheetApp.getUi().alert("アクセストークン: " + accessToken);
+  } else {
+    SpreadsheetApp.getUi().alert("アクセストークンを取得できませんでした。");
+  }
+}
+
+/******************************************************************
+関数：submit_freee
+概要：SelectModal事業所がで選択され、そのIDを取得したら連動して実行
+******************************************************************/
+
+function submit_freee() {
+  getMyCompaniesID();
+  manage_Walletables(); //口座
+  get_Taxes(); //税区分
+  get_AccountItems();//勘定科目
+  manage_Partners();//取引先
+  get_Items_Register();//品目
+  dealsTranscription(); //取引データを作成して
+  postDeals(); //送信！
+
+}
