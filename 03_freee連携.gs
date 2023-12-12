@@ -333,12 +333,22 @@ function getMyCompaniesID() {
 ---------------------------------------------------------------------------------------- **/
 function SelectModal(companies) {
   var htmlContent = '<style>' +
-    // スタイル定義
+    // New CSS styles
+    '.switch-checkbox { margin-bottom: 1rem; list-style: none; display: flex;}' +
+    '.switch-checkbox input[type=checkbox] { position: relative; cursor: pointer; width: 3.5rem; height: 1.9rem; margin-top: -0.2rem; border-radius: 60px; background-color: #ddd; -webkit-appearance: none; -moz-appearance: none; appearance: none; vertical-align: middle; transition: .5s; }' +
+    '.switch-checkbox input[type=checkbox]::before { position: absolute; top: .2rem; left: .2rem; width: 1.5rem; height: 1.5rem; box-sizing: border-box; border-radius: 50%; background: white; color: black; content: \'\'; transition: .3s ease; }' +
+    '.modal-dialog-title-text { font-family: "Noto Sans JP"; }' +
+    '.switch-checkbox input[type=checkbox]:checked { background: #1ff210; }' +
+    '.switch-checkbox input[type=checkbox]:checked::before { left: 1.8rem; }' +
+    '.switch-checkbox label { margin-left: 1rem; font-family: "Noto Sans JP";}' +
     '</style>';
 
   htmlContent += '<ul id="companyList">';
   companies.forEach(function (company, index) {
-    htmlContent += '<li id="company_' + index + '" onclick="selectCompany(' + company.id + ')">' + company.name + '</li>';
+    htmlContent += '<li class="switch-checkbox" id="company_' + index + '">' + 
+      '<input type="checkbox" id="switch-check-' + index + '" onclick="selectCompany(' + company.id + ')">' +
+      '<label for="switch-check-' + index + '">' + company.name + '</label>' +
+      '</li>';
   });
   htmlContent += '</ul>';
 
