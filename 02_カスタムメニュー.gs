@@ -21,30 +21,37 @@ function onOpen() {
 function menu() {
   var ui = SpreadsheetApp.getUi();
 
-  /** freeeMenuを作成
-  **************************************************************/
-  var freeeMenu = ui.createMenu('freee連携メニュー');
-  freeeMenu.addItem('freeeと連携する', 'show_CallbackUrl_and_Applink');
-  freeeMenu.addItem('売上データを送信する', 'submit_freee');
-  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
-  freeeMenu.addToUi();
-
   /** gasMenuを作成
-  **************************************************************/
+**************************************************************/
   var gasMenu = ui.createMenu('共通メニュー');
-  gasMenu.addItem('最初の認証を行う', 'alertAuth_First')
-  gasMenu.addItem('専用フォルダ＆サンプルを作る', 'create_Folder_And_Update_Menu')
+  // ユーザープロパティからフォルダURLを取得
+  var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
+
+  // フォルダURLが存在しない場合のみ、「専用フォルダ＆サンプルを作る」を追加
+  if (!folderUrl) {
+    gasMenu.addItem('専用フォルダ＆サンプルを作る', 'create_Folder_And_Update_Menu');
+  }
+
+  // その他のメニュー項目を追加
+  if (folderUrl) {
+    gasMenu.addItem('作成したフォルダを別タブで開く', 'openFolder');
+  }
   gasMenu.addItem('請求書を読み込む', 'copy_Data_From_MultipleSheets')
   gasMenu.addItem('CSVで出力する', 'output_csv_File')
-
-  var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
-  if (folderUrl) {
-    gasMenu.addItem('Googleドライブでフォルダを開く', 'openFolder');
-  }
-  gasMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
+  gasMenu.addItem('売上データを送信する', 'submit_freee');
+  // gasMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
 
   gasMenu.addToUi();
 
+  /** freeeMenuを作成
+  **************************************************************/
+  var freeeMenu = ui.createMenu('基本設定');
+  freeeMenu.addItem('最初の認証を行う', 'alertAuth_First')
+  freeeMenu.addItem('freeeと連携する', 'show_CallbackUrl_and_Applink');
+    freeeMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
+  // freeeMenu.addItem('売上データを送信する', 'submit_freee');
+  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
+  freeeMenu.addToUi();
 
 }
 

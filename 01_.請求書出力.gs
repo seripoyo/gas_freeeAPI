@@ -33,6 +33,14 @@ function create_Folder_And_Update_Menu() {
   if (response.getSelectedButton() != ui.Button.CANCEL) {
     var folderName = response.getResponseText();
     var folder = DriveApp.createFolder(folderName);
+
+    // 新しいサブフォルダ「移行前」を作成
+    var subFolder = folder.createFolder('移行前');
+    // サブフォルダのURLとIDをプロパティに保存
+    userProperties.setProperty('subFolderUrl', subFolder.getUrl());
+    userProperties.setProperty('subFolderId', subFolder.getId());
+
+
     // フォルダIDをプロパティにrecentFolderIdとして保存
     PropertiesService.getUserProperties().setProperty('recentFolderId', folder.getId());
 
@@ -130,7 +138,7 @@ function copy_Data_From_MultipleSheets() {
     srcSheets.forEach(function (srcSheet) {
       var sheetName = srcSheet.getName();
       //  "テンプレ" と"インボイス対応テンプレ"ではないシートは処理しない
-      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ"&& sheetName !== "プロフィール") {
+      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ" && sheetName !== "プロフィール") {
         Logger.log('Processing sheet: ' + sheetName);
         var initialRow = nextRow;
 
