@@ -375,13 +375,8 @@ function SelectModal(companies) {
 概要：サーバーサイドでアラートを表示
 ---------------------------------------------------------------------- **/
 function showAlert() {
-  SpreadsheetApp.getUi().alert('freeeと連携完了しました！');
+  SpreadsheetApp.getUi().alert('freeeと連携完了です！慣れない作業お疲れさまでした🙌');
 }
-
-/** --------------------------------------------------------------------
-関数：closeDialog
-概要：ダイアログを閉じる前にサーバーサイドのアラート表示関数を呼び出す
----------------------------------------------------------------------- **/
 
 
 /** --------------------------------------------------------------------
@@ -411,14 +406,6 @@ function getSelectedCompanyId() {
 
 }
 
-function logSelectedCompanyId() {
-  var companyId = getSelectedCompanyId(); // 修正されたcompanyIdを取得
-  if (companyId !== null) {
-    Logger.log("選択された事業所ID: " + companyId); // コンソールに出力
-  } else {
-    Logger.log("事業所IDが選択されていません"); // companyIdが取得できなかった場合
-  }
-}
 
 
 
