@@ -327,6 +327,9 @@ function getMyCompaniesID() {
     SpreadsheetApp.getUi().alert("事業所の一覧を取得できませんでした。エラー: " + e.message);
   }
 }
+
+
+
 /** -----------------------------------------------------------------------------------------
 関数：SelectModal
 概要：業所一覧を取得し、このスプシで取引を送信する事業所を選択させるポップアップを出力
@@ -334,13 +337,12 @@ function getMyCompaniesID() {
 function SelectModal(companies) {
   var htmlContent = '<style>' +
     // New CSS styles
-    '.switch-checkbox { margin-bottom: 1rem; list-style: none; display: flex;}' +
+    '.switch-checkbox { margin-bottom: 1rem; align-items: center; display:flex;}' +
     '.switch-checkbox input[type=checkbox] { position: relative; cursor: pointer; width: 3.5rem; height: 1.9rem; margin-top: -0.2rem; border-radius: 60px; background-color: #ddd; -webkit-appearance: none; -moz-appearance: none; appearance: none; vertical-align: middle; transition: .5s; }' +
     '.switch-checkbox input[type=checkbox]::before { position: absolute; top: .2rem; left: .2rem; width: 1.5rem; height: 1.5rem; box-sizing: border-box; border-radius: 50%; background: white; color: black; content: \'\'; transition: .3s ease; }' +
-    '.modal-dialog-title-text { font-family: "Noto Sans JP"; }' +
     '.switch-checkbox input[type=checkbox]:checked { background: #1ff210; }' +
     '.switch-checkbox input[type=checkbox]:checked::before { left: 1.8rem; }' +
-    '.switch-checkbox label { margin-left: 1rem; font-family: "Noto Sans JP";}' +
+    '.switch-checkbox label { margin-left: 1rem;     font-size: 18px; font-family: "Noto Sans JP"; margin-bottom:10px;}' +
     '</style>';
 
   htmlContent += '<ul id="companyList">';
@@ -358,13 +360,28 @@ function SelectModal(companies) {
     '  google.script.run.withSuccessHandler(closeDialog).set_Selected_CompanyId(companyId); ' +
     '}' +
     'function closeDialog() { ' +
-    '  google.script.host.close(); ' +
+    '   google.script.run.withSuccessHandler(function() { ' +
+    '   google.script.host.close(); ' +
+    '  }).showAlert(); ' +
     '}' +
     '</script>';
 
   var ui = HtmlService.createHtmlOutput(htmlContent).setWidth(500).setHeight(200);
   SpreadsheetApp.getUi().showModalDialog(ui, "事業所を選択してください！");
 }
+
+/** --------------------------------------------------------------------
+関数：showAlert
+概要：サーバーサイドでアラートを表示
+---------------------------------------------------------------------- **/
+function showAlert() {
+  SpreadsheetApp.getUi().alert('freeeと連携完了しました！');
+}
+
+/** --------------------------------------------------------------------
+関数：closeDialog
+概要：ダイアログを閉じる前にサーバーサイドのアラート表示関数を呼び出す
+---------------------------------------------------------------------- **/
 
 
 /** --------------------------------------------------------------------
@@ -375,6 +392,10 @@ function set_Selected_CompanyId(companyId) {
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("selectedCompanyId", companyId);
 }
+/** --------------------------------------------------------------------
+関数：getSelectedCompanyId
+概要：selectedCompanyIdに保存されたcompanyIdを取得
+---------------------------------------------------------------------- **/
 
 function getSelectedCompanyId() {
   var userProperties = PropertiesService.getUserProperties();
@@ -389,6 +410,7 @@ function getSelectedCompanyId() {
   return null; // companyIdがnullまたはundefinedの場合
 
 }
+
 function logSelectedCompanyId() {
   var companyId = getSelectedCompanyId(); // 修正されたcompanyIdを取得
   if (companyId !== null) {
