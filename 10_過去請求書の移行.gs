@@ -67,10 +67,25 @@ function processYearSelection(selectedYear) {
 }
 
 function copyBoldSheetsToNewSpreadsheet() {
-  // 新しいスプレッドシート「抽出した請求書一覧」を作成
+  // サブフォルダIDを取得
+  // var userProperties = PropertiesService.getUserProperties();
+  // var subFolderId = userProperties.getProperty('subFolderId');
+  // var subFolder = DriveApp.getFolderById(subFolderId);
+
+  var userProperties = PropertiesService.getUserProperties();
+  var subFolderId = userProperties.getProperty('subFolderId');
+    var subFolder = DriveApp.getFolderById(subFolderId);
+  if (!subFolderId) {
+    throw new Error("サブフォルダのIDが見つかりません。");
+  }
+
+  // '移行前'フォルダに新しいスプレッドシートを作成
+  var subFolder = DriveApp.getFolderById(subFolderId);
   var newSpreadsheet = SpreadsheetApp.create('抽出した請求書一覧');
+  var newSpreadsheetFile = DriveApp.getFileById(newSpreadsheet.getId());
   var newSpreadsheetUrl = newSpreadsheet.getUrl();
-  Logger.log('新しいスプレッドシートが作成されました: ' + newSpreadsheetUrl);
+  subFolder.addFile(newSpreadsheetFile);
+    Logger.log('新しいスプレッドシートがサブフォルダ内に作成されました: ' + newSpreadsheetUrl);
 
   // '移行用スプシ一覧'シートを取得
   var sourceSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -79,37 +94,31 @@ function copyBoldSheetsToNewSpreadsheet() {
     throw new Error("'移行用スプシ一覧'シートが見つかりません。");
   }
 
-  // E列（子シート名とリンク）のデータとフォントの太字情報を取得
-  var range = sourceSheet.getRange(3, 5, sourceSheet.getLastRow() - 2, 1);
-  var values = range.getValues();
-  var fonts = range.getFontWeights();
-  Logger.log('子シートのデータを取得しました。');
-
   // 3行目以降で太字になっている子シートをコピー
-  for (var i = 0; i < values.length; i++) {
-    if (fonts[i][0] === 'bold' && values[i][0]) {
-      var formula = sourceSheet.getRange(i + 3, 5).getFormula(); // 数式を取得
-      Logger.log('行 ' + (i + 3) + ' の数式: ' + formula); // 数式をログに記録
-
-      var childSheetUrl = extractUrlFromFormula(formula); // 数式からURLを抽出
-      var childSheetName = extractNameFromFormula(formula); // 数式からシート名を抽出
+  for (var i = 3; i <= sourceSheet.getLastRow(); i++) {
+    var fontBold = sourceSheet.getRange(i, 5).getFontWeight();
+    if (fontBold === 'bold') {
+      var formula = sourceSheet.getRange(i, 5).getFormula();
+      var childSheetUrl = extractUrlFromFormula(formula);
+      var childSheetName = extractNameFromFormula(formula);
 
       if (childSheetUrl && childSheetName) {
+        var parentSpreadsheet = SpreadsheetApp.openByUrl(childSheetUrl);
+        var parentSheetName = parentSpreadsheet.getName(); // 親シート名を取得
+
+        var newName = parentSheetName + '_' + childSheetName; // 新しいシート名
         try {
-          // コピー元のシートを取得し、新しいスプレッドシートにコピー
-          var sheetToCopy = SpreadsheetApp.openByUrl(childSheetUrl).getSheetByName(childSheetName);
-          sheetToCopy.copyTo(newSpreadsheet).setName(childSheetName);
-          Logger.log('シートをコピーしました: ' + childSheetName);
+          var sheetToCopy = parentSpreadsheet.getSheetByName(childSheetName);
+          sheetToCopy.copyTo(newSpreadsheet).setName(newName);
+          Logger.log('シートをコピーしました: ' + newName);
         } catch (e) {
           Logger.log('エラー: ' + e.message);
         }
       } else {
-        Logger.log('有効なURLまたはシート名が見つかりません: 行 ' + (i + 3));
+        Logger.log('有効なURLまたはシート名が見つかりません: 行 ' + i);
       }
     }
   }
-
-  Logger.log('処理完了');
 }
 
 function extractUrlFromFormula(formula) {
