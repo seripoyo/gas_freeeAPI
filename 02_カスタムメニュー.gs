@@ -50,9 +50,8 @@ function menu() {
   freeeMenu.addItem('freeeと連携する', 'show_CallbackUrl_and_Applink');
     freeeMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
   // freeeMenu.addItem('売上データを送信する', 'submit_freee');
-  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
+  freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
   freeeMenu.addToUi();
-
 }
 
 /******************************************************************
@@ -61,15 +60,12 @@ function menu() {
 概要：Googleドライブに作成したフォルダのページを開く
 ******************************************************************/
 
-
-
 function invoice_import() {
   copy_Data_From_MultipleSheets(); //請求書インポート
   // 少し遅延を入れる（必要に応じて）
   // Utilities.sleep(3000);
 
 }
-
 
 /******************************************************************
 追加されるメニュー：gasMenu
@@ -127,13 +123,13 @@ function showAlertWithAccessToken() {
 ******************************************************************/
 
 function submit_freee() {
-  getMyCompaniesID();
+  // getMyCompaniesID();
   manage_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
   manage_Partners();//取引先
   get_Items_Register();//品目
   dealsTranscription(); //取引データを作成して
-  postDeals(); //送信！
+  // postDeals(); //送信！
 
 }

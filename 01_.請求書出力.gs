@@ -10,8 +10,8 @@
 
 
 /******************************************************************
-function name |create_Folder_And_Update_Menu
-summary       |Googleドライブに新しくフォルダを作成
+関数：create_Folder_And_Update_Menu
+概要：Googleドライブに新しくフォルダを作成
 ******************************************************************/
 
 function create_Folder_And_Update_Menu() {
@@ -73,8 +73,8 @@ function create_Folder_And_Update_Menu() {
 }
 
 /******************************************************************
-function name |get_SpreadsheetIds_From_Folder
-summary       |Googleドライブに存在する請求書を取引一覧シートに出力
+関数：get_SpreadsheetIds_From_Folder
+概要：Googleドライブに存在する請求書を取引一覧シートに出力
 ******************************************************************/
 function get_SpreadsheetIds_From_Folder(folderId) {
   // IDをログに出力して確認
@@ -105,8 +105,8 @@ function get_SpreadsheetIds_From_Folder(folderId) {
 }
 
 /******************************************************************
-function name |copy_Data_From_MultipleSheets
-summary       |「取引一覧」シートを対象として出力
+関数：copy_Data_From_MultipleSheets
+概要：「取引一覧」シートを対象として出力
 ******************************************************************/
 
 function copy_Data_From_MultipleSheets() {
@@ -226,15 +226,4 @@ function copy_Data_From_MultipleSheets() {
       }
     });
   });
-}
-function formatDate(dateValue) {
-  if (dateValue instanceof Date) {
-    var year = dateValue.getFullYear();
-    var month = ('0' + (dateValue.getMonth() + 1)).slice(-2);
-    var day = ('0' + dateValue.getDate()).slice(-2);
-    return year + '-' + month + '-' + day;
-  } else {
-    // 日付でない場合はそのまま返す
-    return dateValue;
-  }
 }

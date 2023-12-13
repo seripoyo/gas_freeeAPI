@@ -72,16 +72,16 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
 
     // 取引先
     var partnerName = row[4];
-    // 取引先名からpartner_idを検索する関数
-    function findPartnerIdByName(partnersData, partnerName) {
-      partnerName = partnerName.trim(); // 余分な空白を削除
-      for (var i = 0; i < partnersData.length; i++) {
-        if (partnersData[i].name.trim() === partnerName) { // こちらも余分な空白を削除
-          return partnersData[i].partner_id;
-        }
-      }
-      return ''; // 該当する取引先がなければ空文字を返す
+             // 取引先名からpartner_idを検索する関数
+function findPartnerIdByName(partnersData, partnerName) {
+  partnerName = partnerName.trim(); // 余分な空白を削除
+  for (var i = 0; i < partnersData.length; i++) {
+    if (partnersData[i].name.trim() === partnerName) { // こちらも余分な空白を削除
+      return partnersData[i].partner_id;
     }
+  }
+  return ''; // 該当する取引先がなければ空文字を返す
+}
     var partnerId = findPartnerIdByName(savedPartnersData, partnerName);
     if (partnerId) {
       targetSheet.getRange(currentRow, 5).setValue(partnerId);
@@ -90,14 +90,14 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
     // 勘定科目
     var accountItemName = row[5];
     //         // 勘定科目名からidを検索する関数
-    function findAccountIdByName(accountItemsData, accountItemName) {
-      for (var i = 0; i < accountItemsData.length; i++) {
-        if (accountItemsData[i].name === accountItemName) {
-          return accountItemsData[i].id; // 該当するidを返す
+        function findAccountIdByName(accountItemsData, accountItemName) {
+          for (var i = 0; i < accountItemsData.length; i++) {
+            if (accountItemsData[i].name === accountItemName) {
+              return accountItemsData[i].id; // 該当するidを返す
+            }
+          }
+          return ''; // 該当する勘定科目がなければ空文字を返す
         }
-      }
-      return ''; // 該当する勘定科目がなければ空文字を返す
-    }
     var accountId = findAccountIdByName(savedAccountItemsData, accountItemName);
     if (accountId) {
       targetSheet.getRange(currentRow, 7).setValue(accountId);
@@ -106,16 +106,16 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
     // 税計算区分
     var taxName = row[6];
     //         //税計算区分
-    var savedTaxesData = JSON.parse(PropertiesService.getUserProperties().getProperty("taxesData"));
-    // 税区分名からtax_codeを検索する関数
-    function findTaxCodeByName(taxesData, taxName) {
-      for (var i = 0; i < taxesData.length; i++) {
-        if (taxesData[i].name_ja === taxName) {
-          return taxesData[i].tax_code; // 該当するtax_codeを返す
+        var savedTaxesData = JSON.parse(PropertiesService.getUserProperties().getProperty("taxesData"));
+        // 税区分名からtax_codeを検索する関数
+        function findTaxCodeByName(taxesData, taxName) {
+          for (var i = 0; i < taxesData.length; i++) {
+            if (taxesData[i].name_ja === taxName) {
+              return taxesData[i].tax_code; // 該当するtax_codeを返す
+            }
+          }
+          return ''; // 該当する税区分がなければ空文字を返す
         }
-      }
-      return ''; // 該当する税区分がなければ空文字を返す
-    }
     var taxCode = findTaxCodeByName(savedTaxesData, taxName);
     if (taxCode) {
       targetSheet.getRange(currentRow, 8).setValue(taxCode);
@@ -124,14 +124,14 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
     // 品目
     var itemName = row[11];
     //         // 品目名からitem_idを検索する関数
-    function findItemIdByName(itemsData, itemName) {
-      for (var i = 0; i < itemsData.length; i++) {
-        if (itemsData[i].name === itemName) {
-          return itemsData[i].item_id; // 該当するitem_idを返す
+        function findItemIdByName(itemsData, itemName) {
+          for (var i = 0; i < itemsData.length; i++) {
+            if (itemsData[i].name === itemName) {
+              return itemsData[i].item_id; // 該当するitem_idを返す
+            }
+          }
+          return ''; // 該当する品目がなければ空文字を返す
         }
-      }
-      return ''; // 該当する品目がなければ空文字を返す
-    }
     var itemId = findItemIdByName(savedItemsData, itemName);
     if (itemId) {
       targetSheet.getRange(currentRow, 9).setValue(itemId);
@@ -141,9 +141,7 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
     targetSheet.getRange(currentRow, 12).setValue(row[7]);
 
     // 税額
-    // targetSheet.getRange(currentRow, 13).setValue(row[9]);
- var taxAmount = row[9] ? row[9] : 0;
-    targetSheet.getRange(currentRow, 13).setValue(taxAmount);
+    targetSheet.getRange(currentRow, 13).setValue(row[9]);
 
     // 決済金額
     targetSheet.getRange(currentRow, 17).setValue(row[16]);
@@ -153,27 +151,21 @@ function transferDataFromSheet(sourceSheet, targetSheet) {
     targetSheet.getRange(currentRow, 14).setValue(settlementDate);
 
     // 口座情報
-    function findWalletableIdByName(walletablesData, walletableName) {
-      for (var i = 0; i < walletablesData.length; i++) {
-        if (walletablesData[i].name === walletableName) {
-          return walletablesData[i].from_walletable_id; // 該当するfrom_walletable_idを返す
+            function findWalletableIdByName(walletablesData, walletableName) {
+          for (var i = 0; i < walletablesData.length; i++) {
+            if (walletablesData[i].name === walletableName) {
+              return walletablesData[i].from_walletable_id; // 該当するfrom_walletable_idを返す
+            }
+          }
+          return ''; // 該当する口座がなければ空文字を返す
         }
-      }
-      return ''; // 該当する口座がなければ空文字を返す
-    }
-    var savedWalletablesData = JSON.parse(PropertiesService.getUserProperties().getProperty("walletablesData"));
-
+//         var savedWalletablesData = JSON.parse(PropertiesService.getUserProperties().getProperty("walletablesData"));
     var walletableName = row[15];
     var walletableId = findWalletableIdByName(savedWalletablesData, walletableName);
-    var walletableType = savedWalletablesData.find(walletable => walletable.from_walletable_id === walletableId)?.from_walletable_type;
-
-    var walletableId = findWalletableIdByName(savedWalletablesData, walletableName);
     if (walletableId) {
-      targetSheet.getRange(currentRow, 16).setValue(walletableId); // 口座ID-from_walletable_id
-      targetSheet.getRange(currentRow, 15).setValue(walletableType); //口座種別-from_walletable_type
-
+      targetSheet.getRange(currentRow, 15).setValue(walletableId);
     }
-    var walletableType = savedWalletablesData.find(walletable => walletable.from_walletable_id === walletableId)?.from_walletable_type;
+
   });
 }
 

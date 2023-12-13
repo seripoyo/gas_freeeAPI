@@ -144,4 +144,3 @@ function saved_PartnersData() {
     return []; // データがない場合は空の配列を返す
   }
 }
-

@@ -7,10 +7,9 @@
 
 
 /******************************************************************
-関数：get_Items_Register
-概要：品目一覧取得&登録→再度一覧取得→データを保存
-******************************************************************/
-// 既存の品目の一覧を取得し、必要に応じて新しい品目を登録
+ * 関数：get_Items_Register
+ * 概要：新しい品目を取引一覧に登録し、品目データを保存する関数
+ ******************************************************************/
 function get_Items_Register() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
@@ -60,8 +59,12 @@ function get_Items_Register() {
 }
 
 /******************************************************************
-関数：register_Save_New_Item
-概要：品目の新規登録
+ * 関数：register_Save_New_Item
+ * 概要：新しい品目を登録し、更新された品目一覧を保存する関数
+ * 
+ * @param {string} companyId - 会社ID
+ * @param {string} itemName - 品目名
+ * @param {string} accessToken - アクセストークン
 ******************************************************************/
 function register_Save_New_Item(companyId, itemName, accessToken) {
   var requestUrl = "https://api.freee.co.jp/api/1/items";
@@ -102,9 +105,14 @@ function register_Save_New_Item(companyId, itemName, accessToken) {
   }
 }
 
-
-
-// 最終行を取得する関数
+/******************************************************************
+ * 関数：getLastRowInColumn
+ * 概要：指定したシートと列番号に基づいて情報が入力されている最終行を取得する関数
+ * 
+ * @param {string} sheetName - 検索対象のシート名
+ * @param {number} columnNumber - 情報が入力されている列の列番号（1から始まる）
+ * @return {number} - 情報が入力されている最終行の行番号
+******************************************************************/
 function getLastRowInColumn(sheetName, columnNumber) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var data = sheet.getRange(2, columnNumber, sheet.getLastRow()).getValues();
@@ -112,17 +120,24 @@ function getLastRowInColumn(sheetName, columnNumber) {
   return lastRow;
 }
 
-// テスト用の関数
+/******************************************************************
+ * 関数：testGetItemsAndRegister
+ * 概要：get_Items_Register()を呼び出し、保存された品目データをログに表示するテスト用の関数
+******************************************************************/
 function testGetItemsAndRegister() {
   get_Items_Register();
   var itemsData = getSavedItemsData();
   Logger.log("取得した品目データ: " + JSON.stringify(itemsData));
 }
 
-// 保存した品目データを取得する関数
+/******************************************************************
+ * 関数：getSavedItemsData
+ * 概要：保存された品目データを取得する関数
+ * 
+ * @return {array} - 保存された品目データの配列
+******************************************************************/
 function getSavedItemsData() {
   var userProperties = PropertiesService.getUserProperties();
   var itemsDataString = userProperties.getProperty("itemsData");
   return itemsDataString ? JSON.parse(itemsDataString) : [];
-  
 }

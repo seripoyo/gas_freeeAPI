@@ -6,13 +6,13 @@
 
 
 /******************************************************************
-関数：get_Walletables
-概要：口座一覧取得
+関数：manage_Walletables
+概要：勘定科目一覧を取得し、整形して保存する
 ******************************************************************/
 function manage_Walletables() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
+  var freeeApp = getService(); // freeeサービスを取得
+  var accessToken = freeeApp.getAccessToken(); // アクセストークンを取得
+  var companyId = getSelectedCompanyId(); // 選択中の会社のIDを取得
   var requestUrl = "https://api.freee.co.jp/api/1/walletables?company_id=" + companyId + "&with_balance=true";
   var headers = { "Authorization": "Bearer " + accessToken };
 
@@ -46,15 +46,14 @@ function manage_Walletables() {
   return processedWalletables; // 結果の配列を返す
 }
 
-
 /******************************************************************
 関数：get_Taxes
-概要：税区分一覧取得&保存
+概要：選択中の会社の税区分一覧を取得し、整形して保存する
 ******************************************************************/
 function get_Taxes() {
-  var freeeApp = getService();
-  var accessToken = freeeApp.getAccessToken();
-  var companyId = getSelectedCompanyId();
+  var freeeApp = getService(); // freeeサービスを取得
+  var accessToken = freeeApp.getAccessToken(); // アクセストークンを取得
+  var companyId = getSelectedCompanyId(); // 選択中の会社のIDを取得
   var requestUrl = "https://api.freee.co.jp/api/1/taxes/companies/" + companyId;
   var headers = { "Authorization": "Bearer " + accessToken };
   var options = { "method": "get", "headers": headers };
@@ -81,9 +80,9 @@ function get_Taxes() {
 }
 
 /******************************************************************
-関数：get_AccountItems
-概要：勘定科目一覧の取得
-******************************************************************/
+ * 関数：get_AccountItems
+ * 概要：取引一覧のスプレッドシートから勘定科目情報を取得し、プロパティサービスに保存する関数
+ ******************************************************************/
 function get_AccountItems() {
   var freeeApp = getService();
   var accessToken = freeeApp.getAccessToken();
@@ -130,11 +129,24 @@ function get_AccountItems() {
 
   return matchingAccountItems; // 結果の配列を返す
 }
-// 指定したシートと列番号に基づいて情報が入力されている最終行を取得する関数
+/** --------------------------------------------------------------------
+ * 関数：getLastRowInColumn
+ * 概要：指定したシートと列番号に基づいて情報が入力されている最終行を取得する関数
+ * 
+ * @param {string} sheetName - 検索対象のシート名
+ * @param {number} columnNumber - 情報が入力されている列の列番号（1から始まる）
+ * @return {number} - 情報が入力されている最終行の行番号
+---------------------------------------------------------------------- **/
 function getLastRowInColumn(sheetName, columnNumber) {
+  // 指定したシート名からシートを取得
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  
+  // 指定した列のデータを取得し、2次元の配列として格納
   var columnData = sheet.getRange(1, columnNumber, sheet.getMaxRows(), 1).getValues();
+  
+  // 列のデータから空でないセルが現れる最後の行を取得
   var lastRow = columnData.filter(String).length;
+  
+  // 最終行の行番号を返す
   return lastRow;
 }
-

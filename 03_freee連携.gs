@@ -371,40 +371,42 @@ function SelectModal(companies) {
 }
 
 /** --------------------------------------------------------------------
-関数：showAlert
-概要：サーバーサイドでアラートを表示
+ * 関数：showAlert
+ * 概要：サーバーサイドでアラートを表示
 ---------------------------------------------------------------------- **/
 function showAlert() {
+  // Google Apps ScriptのUIサービスを使用してアラートを表示
   SpreadsheetApp.getUi().alert('freeeと連携完了です！慣れない作業お疲れさまでした🙌');
 }
 
-
 /** --------------------------------------------------------------------
-関数：set_Selected_CompanyId
-概要：選択されたcompanyIdをselectedCompanyIdに保存
+ * 関数：set_Selected_CompanyId
+ * 概要：選択されたcompanyIdをselectedCompanyIdに保存
 ---------------------------------------------------------------------- **/
 function set_Selected_CompanyId(companyId) {
+  // ユーザープロパティを使用して選択されたcompanyIdを保存
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperty("selectedCompanyId", companyId);
 }
-/** --------------------------------------------------------------------
-関数：getSelectedCompanyId
-概要：selectedCompanyIdに保存されたcompanyIdを取得
----------------------------------------------------------------------- **/
 
+/** --------------------------------------------------------------------
+ * 関数：getSelectedCompanyId
+ * 概要：selectedCompanyIdに保存されたcompanyIdを取得
+---------------------------------------------------------------------- **/
 function getSelectedCompanyId() {
+  // ユーザープロパティを使用してselectedCompanyIdを取得
   var userProperties = PropertiesService.getUserProperties();
   var companyId = userProperties.getProperty("selectedCompanyId");
 
   if (companyId) {
+    // companyIdが存在する場合、小数点以下を切り捨てて整数に変換して返す
     var fixedCompanyId = parseFloat(companyId).toFixed(0);
     return parseInt(fixedCompanyId, 10);
   }
 
-
-  return null; // companyIdがnullまたはundefinedの場合
-
+  return null; // companyIdがnullまたはundefinedの場合、nullを返す
 }
+
 
 
 
