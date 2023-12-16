@@ -1,59 +1,68 @@
-// Googleドライブにフォルダ作成
-// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-function createFolderAndUpdateMenu() {
+/******************************************************************
+ * 
+ * Googleドライブにフォルダを作成＆中に指定したシートを複製
+ * フォルダ内のシートを取引一覧シートに出力するよ
+ * それ以外は保存してあるやつから情報を引っ張るよ！というやつ
+ * それぞれ全部引っ張ったら取引シートに入力出来るよ。
+ * 
+******************************************************************/
+
+
+
+/******************************************************************
+関数：create_Folder_And_Update_Menu
+概要：Googleドライブに新しくフォルダを作成
+******************************************************************/
+
+function create_Folder_And_Update_Menu() {
   var ui = SpreadsheetApp.getUi();
 
-  // フォルダが既に作成されているか確認
+  // 既にフォルダが作成されているか確認
   var userProperties = PropertiesService.getUserProperties();
-  var folderCreated = userProperties.getProperty('folderCreated');
+  // var folderCreated = userProperties.getProperty('folderCreated');
 
-  if (folderCreated) {
-    // 既にフォルダが作成されている場合は中止
-    ui.alert('もうフォルダを作成済みです。');
+  // if (folderCreated) {
+  //   ui.alert('もうフォルダを作成済みです。');
+  //   return;
+  // }
 
-    return; // スクリプトの実行を中止
-  }
+  // 処理中のモードレスダイアログを表示
+  var htmlOutput = HtmlService.createHtmlOutput('<p>処理中です、少しお待ちください🙏<br>このポップアップは閉じて大丈夫です。</p>')
+    .setWidth(400)
+    .setHeight(50);
+  ui.showModelessDialog(htmlOutput, '処理中');
 
   var response = ui.prompt('作成する請求書フォルダ名を入力してください');
 
   if (response.getSelectedButton() != ui.Button.CANCEL) {
     var folderName = response.getResponseText();
     var folder = DriveApp.createFolder(folderName);
-    // フォルダIDをプロパティにrecentFolderIdとして保存
-    PropertiesService.getUserProperties().setProperty('recentFolderId', folder.getId());
+    userProperties.setProperty('recentFolderId', folder.getId());
+    userProperties.setProperty('folderUrl', folder.getUrl());
 
-    // フォルダURLをプロパティにfolderUrlとして保存
-    var folderUrl = folder.getUrl();
-    PropertiesService.getUserProperties().setProperty('folderUrl', folderUrl);
+    // 複製元スプレッドシートのID
+    var templateId1 = '1frGGW4Awz4aIeiWfKSAar5k1qY9NyGu7fbLZ4pjCx8o';
+    var templateId2 = '1B4WyWlv7HKH1eQk4pAZW_YBL2k6PBb15oQ1jcnOpqnY';
 
-
-    // 複製元となるスプレッドシートのID
-    var templateId1 = '1frGGW4Awz4aIeiWfKSAar5k1qY9NyGu7fbLZ4pjCx8o'; // ★サンプル
-    var templateId2 = '1B4WyWlv7HKH1eQk4pAZW_YBL2k6PBb15oQ1jcnOpqnY'; // ★【複製用】請求書テンプレ
-
-    // スプレッドシート複製先での名称
     DriveApp.getFileById(templateId1).makeCopy('サンプル', folder);
     DriveApp.getFileById(templateId2).makeCopy('複製用テンプレ', folder);
 
-    // フォルダが作成されたことを記録
-    PropertiesService.getUserProperties().setProperty('folderCreated', 'true');
+    userProperties.setProperty('folderCreated', 'true');
 
-    ui.alert(' 「' + folderName + '」 フォルダが作成され、その中に「サンプル」と「複製用テンプレ」のシートが追加されました。');
-
-
-    // フォルダURLを取得
-    var folderUrl = folder.getUrl();
+    ui.alert('「' + folderName + '」フォルダが作成されました。このダイアログは閉じてください。');
   } else {
     ui.alert('フォルダ作成がキャンセルされました。');
   }
 
-  // メニューを更新
-  updateMenu();
+  menu(); // メニューを更新
 }
 
-// Googleドライブに存在するスプシを対象に売上履歴に出力
-// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-function getSpreadsheetIdsFromFolder(folderId) {
+
+/******************************************************************
+関数：get_SpreadsheetIds_From_Folder
+概要：Googleドライブに存在する請求書を取引一覧シートに出力
+******************************************************************/
+function get_SpreadsheetIds_From_Folder(folderId) {
   // IDをログに出力して確認
   Logger.log('Fetching spreadsheets from folder ID: ' + folderId);
 
@@ -80,10 +89,13 @@ function getSpreadsheetIdsFromFolder(folderId) {
   // スプシが重複した場合は削除
   return Array.from(new Set(spreadsheetIds));
 }
-// フォルダ作成が確認出来なかった場合の出力
-// ------------------------------------------------------------------------------------------
 
-function copyDataFromMultipleSheets() {
+/******************************************************************
+関数：copy_Data_From_MultipleSheets
+概要：「取引一覧」シートを対象として出力
+******************************************************************/
+
+function copy_Data_From_MultipleSheets() {
   var userProperties = PropertiesService.getUserProperties();
   var folderId = userProperties.getProperty('recentFolderId');
   Logger.log(folderId);
@@ -92,14 +104,14 @@ function copyDataFromMultipleSheets() {
 
   }
 
-  var sourceSpreadsheetIds = getSpreadsheetIdsFromFolder(folderId);
+  var sourceSpreadsheetIds = get_SpreadsheetIds_From_Folder(folderId);
 
-  // 「売上履歴」シートを対象として出力
+  // フォルダ作成が確認出来なかった場合の出力
   // ------------------------------------------------------------------------------------------
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var dstSheet = ss.getSheetByName("売上履歴");
+  var dstSheet = ss.getSheetByName("取引一覧");
   if (!dstSheet) {
-    throw new Error('"売上履歴"という名前のシートが見つかりません。');
+    throw new Error('"取引一覧"という名前のシートが見つかりません。');
   }
   // 2行目より開始
   // ------------------------------------------------------------------------------------------
@@ -112,12 +124,11 @@ function copyDataFromMultipleSheets() {
     srcSheets.forEach(function (srcSheet) {
       var sheetName = srcSheet.getName();
       //  "テンプレ" と"インボイス対応テンプレ"ではないシートは処理しない
-      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ") {
+      if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ" && sheetName !== "プロフィール") {
         Logger.log('Processing sheet: ' + sheetName);
         var initialRow = nextRow;
 
-
-        // 請求書フォーマットから売上履歴フォーマットへ値を入力
+        // 請求書フォーマットから取引一覧フォーマットへ値を入力
         dstSheet.getRange("A" + nextRow).setValue("収入"); //収支区分
 
         // 取引内容が確定した日（=発生日）を yyyy-mm-dd 形式で取得し設定
@@ -201,15 +212,4 @@ function copyDataFromMultipleSheets() {
       }
     });
   });
-}
-function formatDate(dateValue) {
-  if (dateValue instanceof Date) {
-    var year = dateValue.getFullYear();
-    var month = ('0' + (dateValue.getMonth() + 1)).slice(-2);
-    var day = ('0' + dateValue.getDate()).slice(-2);
-    return year + '-' + month + '-' + day;
-  } else {
-    // 日付でない場合はそのまま返す
-    return dateValue;
-  }
 }

@@ -1,13 +1,15 @@
-/**
- * スプレッドシートの内容をCSVファイルへ出力
- */
-function outputCsvFile() {
+
+/******************************************************************
+関数：output_csv_File
+概要：スプレッドシートの内容をCSVファイルへ出力
+******************************************************************/
+function output_csv_File() {
   // 出力するフォルダのIDをプロパティより取得
   var userProperties = PropertiesService.getUserProperties();
   var folderId = userProperties.getProperty('recentFolderId');
 
   // 出力するファイル名
-  const fileName = '都道府県.csv';
+  const fileName = 'freeeインポート用CSV.csv';
 
   // アクティブなシートを取得
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -19,8 +21,19 @@ function outputCsvFile() {
   let contents = values.map(row => row.join(',')).join('\n');
 
   // CSVファイル書き出し
-  createCsvFile_(folderId, fileName, contents);
+  createCsvFile(folderId, fileName, contents);
 }
+
+
+/******************************************************************
+ * 関数：createCsvFile_
+ * 概要：CSVファイル書き出し
+ * 引数：
+* folderId：フォルダID
+* fileName：ファイル名
+* contents：ファイルの内容
+ * 返り値：なし
+******************************************************************/
 
 /**
  * CSVファイル書き出し
@@ -28,7 +41,8 @@ function outputCsvFile() {
  * @param {string} fileName ファイル名
  * @param {string} contents ファイルの内容
  */
-function createCsvFile_(folderId, fileName, contents) {  
+
+function createCsvFile(folderId, fileName, contents) {  
   // コンテンツタイプ
   const contentType = 'text/csv';
   
