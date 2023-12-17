@@ -19,12 +19,12 @@ function create_Folder_And_Update_Menu() {
 
   // 既にフォルダが作成されているか確認
   var userProperties = PropertiesService.getUserProperties();
-  // var folderCreated = userProperties.getProperty('folderCreated');
+  var folderCreated = userProperties.getProperty('folderCreated');
 
-  // if (folderCreated) {
-  //   ui.alert('もうフォルダを作成済みです。');
-  //   return;
-  // }
+  if (folderCreated) {
+    ui.alert('もうフォルダを作成済みです。');
+    return;
+  }
 
   // 処理中のモードレスダイアログを表示
   var htmlOutput = HtmlService.createHtmlOutput('<p>処理中です、少しお待ちください🙏<br>このポップアップは閉じて大丈夫です。</p>')
@@ -64,7 +64,7 @@ function create_Folder_And_Update_Menu() {
 ******************************************************************/
 function get_SpreadsheetIds_From_Folder(folderId) {
   // IDをログに出力して確認
-  Logger.log('Fetching spreadsheets from folder ID: ' + folderId);
+  // Logger.log('Fetching spreadsheets from folder ID: ' + folderId);
 
   var folder = null;
 
@@ -92,47 +92,52 @@ function get_SpreadsheetIds_From_Folder(folderId) {
 
 /******************************************************************
 関数：copy_Data_From_MultipleSheets
-概要：「取引一覧」シートを対象として出力
+概要：特定のフォルダ内の複数のスプレッドシートからデータを集めて、
+      "取引一覧"シートにコピーする。
 ******************************************************************/
 
 function copy_Data_From_MultipleSheets() {
+  // ユーザー設定のプロパティからフォルダIDを取得
   var userProperties = PropertiesService.getUserProperties();
   var folderId = userProperties.getProperty('recentFolderId');
-  Logger.log(folderId);
+  // Logger.log(folderId);
+
+  // フォルダIDが設定されていない場合、エラーを投げる
   if (!folderId) {
     throw new Error('まだフォルダが作成されていないため、先にフォルダを作成してください。');
-
   }
 
+  // 指定されたフォルダ内のスプレッドシートのIDを取得
   var sourceSpreadsheetIds = get_SpreadsheetIds_From_Folder(folderId);
 
-  // フォルダ作成が確認出来なかった場合の出力
-  // ------------------------------------------------------------------------------------------
+  // 現在アクティブなスプレッドシートを取得し、"取引一覧"シートを探す
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var dstSheet = ss.getSheetByName("取引一覧");
   if (!dstSheet) {
     throw new Error('"取引一覧"という名前のシートが見つかりません。');
   }
-  // 2行目より開始
-  // ------------------------------------------------------------------------------------------
+
+  // コピー開始位置（2行目）を設定
   var nextRow = 2;
 
+  // 各スプレッドシートIDに対して処理を行う
   sourceSpreadsheetIds.forEach(function (spreadsheetId) {
     var srcSpreadsheet = SpreadsheetApp.openById(spreadsheetId);
     var srcSheets = srcSpreadsheet.getSheets();
 
     srcSheets.forEach(function (srcSheet) {
       var sheetName = srcSheet.getName();
-      //  "テンプレ" と"インボイス対応テンプレ"ではないシートは処理しない
+      // 特定のシート名以外は処理しない
       if (sheetName !== "テンプレ" && sheetName !== "インボイス対応テンプレ" && sheetName !== "プロフィール") {
-        Logger.log('Processing sheet: ' + sheetName);
+        // Logger.log('Processing sheet: ' + sheetName);
+        
         var initialRow = nextRow;
 
         // 請求書フォーマットから取引一覧フォーマットへ値を入力
         dstSheet.getRange("A" + nextRow).setValue("収入"); //収支区分
 
         // 取引内容が確定した日（=発生日）を yyyy-mm-dd 形式で取得し設定
-        var issueDate = formatDate(srcSheet.getRange("N4").getValue());
+        var issueDate = formatDate(srcSheet.getRange("P4").getValue());
 
         dstSheet.getRange("C" + nextRow).setValue(issueDate);
 
@@ -157,37 +162,41 @@ function copy_Data_From_MultipleSheets() {
         dstSheet.getRange("F" + nextRow).setValue(srcSheet.getRange("T3").getValue()); //勘定科目。デフォルトは売上高
         dstSheet.getRange("H" + nextRow).setValue(srcSheet.getRange("D15").getValue()); //合計の請求額
 
-        dstSheet.getRange("I" + nextRow).setValue("税込"); //税計算区分
-        dstSheet.getRange("J" + nextRow).setValue(srcSheet.getRange("L30").getValue());  //税額
 
-        // J列（J19からJ29の範囲）を確認し、"8%"が含まれていれば"課税売上8%（軽）"を、それ以外は"課税売上10%"を設定
         // ------------------------------------------------------------------------------------------
-        var range = dstSheet.getRange("J19:J29");
-        var values = range.getValues();
-        var found8Percent = false;
+        // V19とAA19のセルの値をチェックして処理
+        var tax10Percent = srcSheet.getRange("V19").getValue(); // 10%税額
+        var tax8Percent = srcSheet.getRange("AA19").getValue(); // 8%税額
 
-        // J19からJ29の範囲で"8%"を探す
-        for (var i = 0; i < values.length; i++) {
-          if (values[i][0] === "8%") {
-            found8Percent = true;
-            break;
-          }
-        }
-
-        // 条件に基づいてG列の値を設定
-        if (found8Percent) {
-          // 2019年10月1日以降に発生する軽減税率の取引では"課税売上8%"ではなく"課税売上8%（軽）"
-          dstSheet.getRange("G" + nextRow).setValue("課税売上8%（軽）");
-        } else {
+        // 10%税率の処理
+        if (tax10Percent !== "" && parseFloat(tax10Percent) !== 0) {
+          dstSheet.getRange("L" + nextRow).setValue(srcSheet.getRange("C6").getValue()); // 売上の概要
+          dstSheet.getRange("F" + nextRow).setValue(srcSheet.getRange("T3").getValue()); // 勘定科目
+          dstSheet.getRange("J" + nextRow).setValue(tax10Percent); // 10%税額
+          var total10Percent = parseFloat(tax10Percent) + parseFloat(srcSheet.getRange("V20").getValue());
+          dstSheet.getRange("H" + nextRow).setValue(total10Percent); // 10%対象額の合計
+          dstSheet.getRange("I" + nextRow).setValue("税込"); // 税計算区分
           dstSheet.getRange("G" + nextRow).setValue("課税売上10%");
+          nextRow += 1;
         }
-        // 1行追加
-        nextRow += 1;
+
+        // 8%税率の処理
+        if (tax8Percent !== "" && parseFloat(tax8Percent) !== 0) {
+          var salesSummary = srcSheet.getRange("C6").getValue() + " - 軽減税率対象";
+          dstSheet.getRange("L" + nextRow).setValue(salesSummary); // 売上の概要
+          dstSheet.getRange("F" + nextRow).setValue(srcSheet.getRange("T3").getValue()); // 勘定科目
+          dstSheet.getRange("J" + nextRow).setValue(tax8Percent); // 8%税額
+          var total8Percent = parseFloat(tax8Percent) + parseFloat(srcSheet.getRange("AA20").getValue());
+          dstSheet.getRange("H" + nextRow).setValue(total8Percent); // 8%対象額の合計
+          dstSheet.getRange("I" + nextRow).setValue("税込"); // 税計算区分
+          dstSheet.getRange("G" + nextRow).setValue("課税売上8%（軽）");
+          nextRow += 1;
+        }
 
         // 以下はマイナスの金額として出力得
         // ------------------------------------------------------------------------------------------
 
-        dstSheet.getRange("H" + nextRow).setValue(srcSheet.getRange("L31").getValue() * -1);
+        dstSheet.getRange("H" + nextRow).setValue(srcSheet.getRange("L32").getValue() * -1);
         dstSheet.getRange("F" + nextRow).setValue("事業主貸");
         dstSheet.getRange("G" + nextRow).setValue("対象外");
         dstSheet.getRange("L" + nextRow).setValue("源泉所得税"); //勘定科目に源泉徴収税を追加
@@ -206,7 +215,7 @@ function copy_Data_From_MultipleSheets() {
           total += dstSheet.getRange("H" + j).getValue();
         }
         dstSheet.getRange("Q" + initialRow).setValue(total);
-        Logger.log('Data copied to row ' + nextRow);
+        // Logger.log('Data copied to row ' + nextRow);
 
         nextRow++;
       }

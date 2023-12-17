@@ -48,8 +48,11 @@ function get_Items_Register() {
   // 新しい品目を含む品目一覧を更新
   var updatedItems = items.concat(newlyRegisteredItems);
 
+  // 有効な id を持つ品目のみを処理
+  var validItems = updatedItems.filter(item => item.id !== undefined);
+
   // 品目データを保存
-  var itemsData = updatedItems.map(function (item) {
+  var itemsData = validItems.map(function (item) {
     return { item_id: item.id.toString(), name: item.name };
   });
 
@@ -97,7 +100,7 @@ function register_Save_New_Item(companyId, itemName, accessToken) {
 
     var userProperties = PropertiesService.getUserProperties();
     userProperties.setProperty("itemsData", JSON.stringify(itemsData));
-    Logger.log("新しい品目を含む保存された品目データ: " + JSON.stringify(itemsData));
+    // Logger.log("新しい品目を含む保存された品目データ: " + JSON.stringify(itemsData));
   } else {
     // 品目登録に失敗した場合
     Logger.log("品目登録エラー: " + response.getContentText());

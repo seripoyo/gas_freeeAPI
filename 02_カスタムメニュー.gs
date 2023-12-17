@@ -21,40 +21,52 @@ function onOpen() {
 function menu() {
   var ui = SpreadsheetApp.getUi();
 
-  /** gasMenuを作成
-**************************************************************/
-  var gasMenu = ui.createMenu('共通メニュー');
+  /** freeeMenuを作成
+  **************************************************************/
+  var freeeMenu = ui.createMenu('基本設定');
+  freeeMenu.addItem('①最初の認証を行う', 'alertAuth_First')
+
   // ユーザープロパティからフォルダURLを取得
   var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
 
   // フォルダURLが存在しない場合のみ、「専用フォルダ＆サンプルを作る」を追加
   if (!folderUrl) {
-    gasMenu.addItem('専用フォルダ＆サンプルを作る', 'create_Folder_And_Update_Menu');
+    freeeMenu.addItem('②専用フォルダ＆サンプルを作る', 'create_Folder_And_Update_Menu');
   }
 
   // その他のメニュー項目を追加
   if (folderUrl) {
-    gasMenu.addItem('作成したフォルダを別タブで開く', 'openFolder');
+    freeeMenu.addItem('作成したフォルダを別タブで開く', 'openFolder');
   }
-  gasMenu.addItem('請求書を読み込む', 'copy_Data_From_MultipleSheets')
-  gasMenu.addItem('年度ごとのスプシ一覧を抽出', 'listSpreadsheetsByYear')
-  gasMenu.addItem('過去の請求書を読み込み', 'transferDataToTransactionList')
-  gasMenu.addItem('CSVで出力する', 'output_csv_File')
-  gasMenu.addItem('売上データを送信する', 'submit_freee');
-  gasMenu.addItem('過去リセット', 'reset_bef_Sheet');
-  gasMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
+
+  freeeMenu.addItem('請求書を取引一覧に読み込む', 'copy_Data_From_MultipleSheets')
+  freeeMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
+
+  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
+  freeeMenu.addToUi();
+
+  /** gasMenuを作成
+**************************************************************/
+  var gasMenu = ui.createMenu('過去請求書の読み込み');
+  // ユーザープロパティからフォルダURLを取得
+  var folderUrl = PropertiesService.getUserProperties().getProperty('folderUrl');
+
+  gasMenu.addItem('過去の請求書を一覧から抽出する', 'listSpreadsheetsByYear')
+  gasMenu.addItem('選択した過去の請求書を読み込む', 'past_invoice_setting')
+  gasMenu.addItem('過去の取引一覧をリセットする', 'past_invoice_setting')
 
   gasMenu.addToUi();
 
-  /** freeeMenuを作成
+
+  /** freeeMenu2を作成
   **************************************************************/
-  var freeeMenu = ui.createMenu('基本設定');
-  freeeMenu.addItem('最初の認証を行う', 'alertAuth_First')
-  freeeMenu.addItem('freeeと連携する', 'show_CallbackUrl_and_Applink');
-    freeeMenu.addItem('読み込んだ取引一覧を削除する', 'reset_Sheet');
-  // freeeMenu.addItem('売上データを送信する', 'submit_freee');
-  freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
-  freeeMenu.addToUi();
+
+  var freeeMenu2 = ui.createMenu('freee連携');
+
+  freeeMenu2.addItem('④freeeと連携する', 'show_CallbackUrl_and_Applink');
+  freeeMenu2.addItem('⑤売上データを送信する', 'submit_freee');
+  // freeeMenu.addItem('アクセストークン表示', 'showAlertWithAccessToken');
+  freeeMenu2.addToUi();
 }
 
 /******************************************************************
@@ -145,13 +157,13 @@ function showAlertWithAccessToken() {
 ******************************************************************/
 
 function submit_freee() {
-  getMyCompaniesID();
+  // getMyCompaniesID();
   manage_Walletables(); //口座
   get_Taxes(); //税区分
   get_AccountItems();//勘定科目
   manage_Partners();//取引先
   get_Items_Register();//品目
   dealsTranscription(); //取引データを作成して
-  // postDeals(); //送信！
+  postDeals(); //送信！
 
 }
